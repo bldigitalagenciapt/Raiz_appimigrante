@@ -1,0 +1,228 @@
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { AppProvider } from "@/contexts/AppContext";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { OnboardingTour } from "@/components/OnboardingTour";
+// Auth
+import Auth from "./pages/Auth";
+
+// Onboarding
+import Welcome from "./pages/onboarding/Welcome";
+import LanguageSelect from "./pages/onboarding/LanguageSelect";
+import ProfileSelect from "./pages/onboarding/ProfileSelect";
+import NotificationsSetup from "./pages/onboarding/NotificationsSetup";
+import BiometricSetup from "./pages/onboarding/BiometricSetup";
+
+// Main App
+import Home from "./pages/Home";
+import Documents from "./pages/Documents";
+import Aima from "./pages/Aima";
+import Notes from "./pages/Notes";
+import Assistant from "./pages/Assistant";
+import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
+import DocumentCategories from "./pages/settings/DocumentCategories";
+import QuickAccess from "./pages/settings/QuickAccess";
+import NotFound from "./pages/NotFound";
+import { Loader2 } from "lucide-react";
+
+const queryClient = new QueryClient();
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (user) {
+    return <Navigate to="/home" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+function AppRoutes() {
+  return (
+    <Routes>
+      {/* Redirect root to home or auth */}
+      <Route path="/" element={<Navigate to="/home" replace />} />
+
+      {/* Auth Route */}
+      <Route
+        path="/auth"
+        element={
+          <PublicRoute>
+            <Auth />
+          </PublicRoute>
+        }
+      />
+
+      {/* Onboarding Routes */}
+      <Route
+        path="/onboarding/welcome"
+        element={
+          <ProtectedRoute>
+            <Welcome />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/onboarding/language"
+        element={
+          <ProtectedRoute>
+            <LanguageSelect />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/onboarding/profile"
+        element={
+          <ProtectedRoute>
+            <ProfileSelect />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/onboarding/notifications"
+        element={
+          <ProtectedRoute>
+            <NotificationsSetup />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/onboarding/biometric"
+        element={
+          <ProtectedRoute>
+            <BiometricSetup />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Main App Routes */}
+      <Route
+        path="/home"
+        element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/documents"
+        element={
+          <ProtectedRoute>
+            <Documents />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/aima"
+        element={
+          <ProtectedRoute>
+            <Aima />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/notes"
+        element={
+          <ProtectedRoute>
+            <Notes />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assistant"
+        element={
+          <ProtectedRoute>
+            <Assistant />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings/categories"
+        element={
+          <ProtectedRoute>
+            <DocumentCategories />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings/quick-access"
+        element={
+          <ProtectedRoute>
+            <QuickAccess />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Catch-all */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <AuthProvider>
+        <AppProvider>
+          <ThemeProvider>
+            <Toaster />
+            <Sonner />
+            <OnboardingTour />
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+          </ThemeProvider>
+        </AppProvider>
+      </AuthProvider>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
+
+export default App;
