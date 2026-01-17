@@ -142,10 +142,10 @@ export default function Notes() {
               <div
                 key={note.id}
                 className={cn(
-                  'p-4 rounded-2xl border transition-all',
+                  'p-4 rounded-2xl border transition-all shadow-sm',
                   note.is_important
-                    ? 'bg-accent/10 border-accent/30'
-                    : 'bg-card border-border'
+                    ? 'bg-yellow-50/50 border-yellow-200'
+                    : 'bg-[#F8FAFC] border-slate-200'
                 )}
               >
                 <div className="flex items-start gap-3">
