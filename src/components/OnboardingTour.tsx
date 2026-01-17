@@ -17,7 +17,7 @@ export function OnboardingTour() {
                     {
                         element: '.text-2xl.font-bold',
                         popover: {
-                            title: 'Bem-vindo ao Raiz!',
+                            title: 'Bem-vindo ao VOY!',
                             description: 'Este é seu espaço para organizar sua vida em Portugal.',
                             side: "bottom",
                             align: 'start'

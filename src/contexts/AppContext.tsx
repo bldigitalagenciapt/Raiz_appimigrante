@@ -56,8 +56,8 @@ interface AppContextType {
 
 const translations: Record<Language, Record<string, string>> = {
   pt: {
-    'welcome.title': 'Bem-vindo ao Raiz',
-    'welcome.subtitle': 'Tudo o que você precisa da sua vida em Portugal, num só lugar.',
+    'welcome.title': 'Bem-vindo ao VOY',
+    'welcome.subtitle': 'VOY - A porta de entrada para o seu futuro',
     'welcome.start': 'Começar',
     'language.select': 'Escolha seu idioma',
     'profile.select': 'Qual é a sua situação?',
@@ -119,7 +119,7 @@ const translations: Record<Language, Record<string, string>> = {
     'settings.biometric': 'Biometria',
     'settings.backup': 'Backup',
     'settings.theme': 'Tema',
-    'settings.about': 'Sobre o Raiz',
+    'settings.about': 'Sobre o VOY',
     'continue': 'Continuar',
     'save': 'Salvar',
     'cancel': 'Cancelar',
@@ -128,8 +128,8 @@ const translations: Record<Language, Record<string, string>> = {
     'share': 'Compartilhar',
   },
   en: {
-    'welcome.title': 'Welcome to Raiz',
-    'welcome.subtitle': 'Everything you need for your life in Portugal, in one place.',
+    'welcome.title': 'Welcome to VOY',
+    'welcome.subtitle': 'VOY - The gateway to your future',
     'welcome.start': 'Get Started',
     'language.select': 'Choose your language',
     'profile.select': 'What\'s your situation?',
@@ -191,7 +191,7 @@ const translations: Record<Language, Record<string, string>> = {
     'settings.biometric': 'Biometrics',
     'settings.backup': 'Backup',
     'settings.theme': 'Theme',
-    'settings.about': 'About Raiz',
+    'settings.about': 'About VOY',
     'continue': 'Continue',
     'save': 'Save',
     'cancel': 'Cancel',
@@ -219,7 +219,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Load from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem('raiz-app-state');
+    const saved = localStorage.getItem('voy-app-state');
     if (saved) {
       try {
         const state = JSON.parse(saved);
@@ -247,7 +247,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       notes,
       aimaProcess,
     };
-    localStorage.setItem('raiz-app-state', JSON.stringify(state));
+    localStorage.setItem('voy-app-state', JSON.stringify(state));
   }, [language, userProfile, hasCompletedOnboarding, userNumbers, documents, notes, aimaProcess]);
 
   const t = (key: string): string => {

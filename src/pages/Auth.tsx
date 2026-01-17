@@ -98,10 +98,13 @@ export default function Auth() {
         <div className="w-full max-w-sm">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <Leaf className="w-8 h-8 text-primary" />
+            <div className="w-24 h-24 flex items-center justify-center mx-auto mb-4">
+              <img src="/logo.png" alt="VOY Logo" className="w-full h-full object-contain" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">Raiz</h1>
+            <h1 className="text-3xl font-bold text-foreground">VOY</h1>
+            <p className="text-lg font-medium text-primary mt-1">
+              A porta de entrada para o seu futuro
+            </p>
             <p className="text-muted-foreground mt-2">
               {isLogin ? 'Bem-vindo de volta!' : 'Crie sua conta'}
             </p>

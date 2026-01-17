@@ -140,13 +140,13 @@ Os processos podem demorar. Guarde sempre seus protocolos!`,
 • Contrato de arrendamento
 • Comprovativos de morada
 
-**Dica:** Use o app Raiz para guardar tudo digitalmente!`,
+**Dica:** Use o app VOY para guardar tudo digitalmente!`,
   },
   {
     question: 'Como me organizar para não perder prazos?',
     answer: `Dicas para não perder prazos importantes:
 
-**Use o app Raiz:**
+**Use o app VOY:**
 • Adicione datas importantes na seção Imigração
 • Crie notas com lembretes
 • Configure alertas
@@ -174,7 +174,7 @@ Guarde todos os protocolos e comprovantes. Tire foto e salve no app!`,
 • Balcão presencial (com agendamento)
 
 **Dica:** 
-Anote o número do protocolo no app Raiz na seção Imigração!
+Anote o número do protocolo no app VOY na seção Imigração!
 
 **Importante:** 
 Os processos podem demorar. Paciência é fundamental.`,
@@ -314,7 +314,7 @@ export default function Assistant() {
                   </div>
                 </div>
               ))}
-              
+
               {/* More Questions */}
               {messages.length > 0 && (
                 <div className="pt-4">
@@ -337,7 +337,7 @@ export default function Assistant() {
                   </div>
                 </div>
               )}
-              
+
               <div ref={messagesEndRef} />
             </div>
           )}

@@ -79,8 +79,8 @@ export default function Settings() {
     {
       id: 'about',
       icon: Info,
-      label: 'Sobre o Raiz',
-      onClick: () => {},
+      label: 'Sobre o VOY',
+      onClick: () => { },
     },
   ];
 
@@ -108,7 +108,7 @@ export default function Settings() {
         <div className="space-y-2 mb-8">
           {settingsItems.map((item, index) => {
             const Icon = item.icon;
-            
+
             return (
               <button
                 key={item.id}
@@ -152,7 +152,7 @@ export default function Settings() {
 
         {/* Version */}
         <div className="mt-12 text-center">
-          <p className="text-sm text-muted-foreground">Raiz v1.0.0</p>
+          <p className="text-sm text-muted-foreground">VOY v1.0.0</p>
           <p className="text-xs text-muted-foreground mt-1">
             Feito com 💚 para imigrantes em Portugal
           </p>
