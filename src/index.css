@@ -12,23 +12,28 @@
     /* Branco Gelo (Background): #F8FAFC -> hsl(210 40% 98%) */
     /* Cinza Texto (Foreground): #1E293B -> hsl(215 28% 17%) */
 
-    --background: 210 40% 98%; /* Branco Gelo */
-    --foreground: 215 28% 17%; /* Cinza Texto */
+    --background: 210 40% 98%;
+    /* Branco Gelo */
+    --foreground: 215 28% 17%;
+    /* Cinza Texto */
 
-    --card: 0 0% 100%; /* Pure white for cards to pop against ice white bg */
+    --card: 0 0% 100%;
+    /* Pure white for cards to pop against ice white bg */
     --card-foreground: 215 28% 17%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 215 28% 17%;
 
-    --primary: 217 91% 60%; /* Azul Real */
+    --primary: 217 91% 60%;
+    /* Azul Real */
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215 16% 47%;
+    --muted-foreground: 215 25% 27%;
+    /* Escurecido para melhor contraste (de 47% para 27%) */
 
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
@@ -36,8 +41,10 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --success: 142 71% 58%; /* Verde Menta */
-    --success-foreground: 215 28% 17%; /* Contrast text for green */
+    --success: 142 71% 58%;
+    /* Verde Menta */
+    --success-foreground: 215 28% 17%;
+    /* Contrast text for green */
 
     --warning: 38 92% 50%;
     --warning-foreground: 215 28% 17%;
@@ -45,17 +52,19 @@
     --info: 217 91% 60%;
     --info-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 215 20% 88%;
+    --input: 215 20% 88%;
     --ring: 217 91% 60%;
 
-    --radius: 0.5rem; /* Standard modern radius, user can request '1rem' if they prefer rounder */
+    --radius: 0.5rem;
+    /* Standard modern radius, user can request '1rem' if they prefer rounder */
 
     /* Custom gradients */
-    --gradient-warm: linear-gradient(135deg, hsl(217 91% 60%), hsl(142 71% 58%)); /* Blue to Green */
+    --gradient-warm: linear-gradient(135deg, hsl(217 91% 60%), hsl(142 71% 58%));
+    /* Blue to Green */
     --gradient-earth: linear-gradient(180deg, hsl(210 40% 98%), hsl(0 0% 100%));
     --gradient-card: linear-gradient(145deg, #ffffff, #f8fafc);
-    
+
     /* Shadows - Cool tones */
     --shadow-soft: 0 4px 20px -4px hsl(217 91% 60% / 0.1);
     --shadow-card: 0 2px 12px -2px hsl(215 28% 17% / 0.05);
@@ -89,21 +98,22 @@
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted-foreground: 215 20.2% 75.1%;
+    /* Um pouco mais claro no tema escuro para contraste */
 
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    
+
     --success: 142 70% 50%;
     --success-foreground: 0 0% 100%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-    
+
     --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.4);
     --shadow-card: 0 2px 12px -2px hsl(0 0% 0% / 0.3);
     --shadow-button: 0 4px 14px -3px hsl(217 91% 60% / 0.4);
@@ -180,6 +190,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -190,6 +201,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -201,6 +213,7 @@
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -208,9 +221,12 @@
 }
 
 @keyframes pulseSoft {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.7;
   }
