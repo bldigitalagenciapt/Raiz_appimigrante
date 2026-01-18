@@ -13,7 +13,7 @@ export interface ImportantDate {
 export interface AimaProcess {
   id: string;
   user_id: string;
-  process_type: 'cplp' | 'manifestation' | 'renewal' | 'visa' | null;
+  process_type: string | null;
   completed_steps: string[];
   important_dates: ImportantDate[];
   protocols: string[];

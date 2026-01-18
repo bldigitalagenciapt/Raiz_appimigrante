@@ -19,6 +19,14 @@ import { useUserDocuments } from '@/hooks/useUserDocuments';
 import { toast } from 'sonner';
 import { cn } from "@/lib/utils";
 import { TrendingUp, AlertCircle } from 'lucide-react';
+import { visaTypes } from '@/data/visaTypes';
+
+const processTypes = [
+  { id: 'cplp', title: 'CPLP' },
+  { id: 'manifestation', title: 'Manifestação de Interesse' },
+  { id: 'renewal', title: 'Renovação' },
+  { id: 'visa', title: 'Visto' },
+];
 
 type NumberField = 'nif' | 'niss' | 'sns' | 'passport';
 
@@ -237,8 +245,10 @@ export default function Home() {
             </div>
             {aimaProcess?.process_type ? (
               <>
-                <p className="font-bold text-sm truncate capitalize">
-                  {aimaProcess.process_type.replace(/_/g, ' ')}
+                <p className="font-bold text-sm truncate">
+                  {visaTypes.find(v => v.id === aimaProcess.process_type)?.name ||
+                    processTypes.find(p => p.id === aimaProcess.process_type)?.title ||
+                    aimaProcess.process_type.replace(/_/g, ' ')}
                 </p>
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-warning" />

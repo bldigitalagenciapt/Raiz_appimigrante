@@ -96,6 +96,12 @@ const getStepsForProcess = (type: string) => {
       { id: '5', title: 'Aguardar processamento' },
     ],
   };
+
+  // Map specific visa IDs to the generic visa steps
+  if (['study', 'work', 'job-seeking', 'residence', 'schengen'].includes(type)) {
+    return steps.visa;
+  }
+
   return steps[type] || [];
 };
 
@@ -111,9 +117,9 @@ export default function Aima() {
   // Visa section states
   const [showVisaSection, setShowVisaSection] = useState(false);
   const [selectedVisa, setSelectedVisa] = useState<VisaType | null>(null);
-  const [savedVisa, setSavedVisa] = useState<string | null>(() => {
-    return localStorage.getItem('raiz_selected_visa');
-  });
+
+  // Consider process as a visa if it matches any specific visa ID
+  const isSpecificVisa = ['study', 'work', 'job-seeking', 'residence', 'schengen'].includes(process?.process_type || '');
 
   const handleSelectProcess = async (type: string) => {
     setSaving(true);
@@ -167,18 +173,20 @@ export default function Aima() {
     toast({ title: "Protocolo removido" });
   };
 
-  const handleSaveVisa = (visaId: string) => {
-    localStorage.setItem('raiz_selected_visa', visaId);
-    setSavedVisa(visaId);
+  const handleSaveVisa = async (visaId: string) => {
+    setSaving(true);
+    await selectProcessType(visaId);
+    setSaving(false);
     toast({
       title: "Visto salvo!",
       description: "Suas informações de visto foram guardadas.",
     });
   };
 
-  const handleClearVisa = () => {
-    localStorage.removeItem('raiz_selected_visa');
-    setSavedVisa(null);
+  const handleClearVisa = async () => {
+    setSaving(true);
+    await clearProcess();
+    setSaving(false);
     setSelectedVisa(null);
     toast({
       title: "Visto removido",
@@ -198,7 +206,7 @@ export default function Aima() {
   // Show visa detail
   if (selectedVisa) {
     const Icon = visaIcons[selectedVisa.id] || Plane;
-    const isSaved = savedVisa === selectedVisa.id;
+    const isSaved = process?.process_type === selectedVisa.id;
 
     return (
       <MobileLayout>
@@ -340,7 +348,7 @@ export default function Aima() {
           <div className="space-y-3">
             {visaTypes.map((visa, index) => {
               const Icon = visaIcons[visa.id] || Plane;
-              const isSaved = savedVisa === visa.id;
+              const isSaved = process?.process_type === visa.id;
 
               return (
                 <button
@@ -441,8 +449,8 @@ export default function Aima() {
               <div className="flex-1 text-left">
                 <p className="font-bold text-lg">Vistos</p>
                 <p className="text-sm text-muted-foreground">
-                  {savedVisa
-                    ? `Seu visto: ${visaTypes.find(v => v.id === savedVisa)?.name}`
+                  {isSpecificVisa
+                    ? `Seu visto: ${visaTypes.find(v => v.id === process?.process_type)?.name}`
                     : 'Conheça os tipos de visto para Portugal'
                   }
                 </p>
@@ -468,7 +476,9 @@ export default function Aima() {
           <div>
             <h1 className="text-2xl font-bold text-foreground">Imigração / AIMA</h1>
             <p className="text-muted-foreground">
-              {processTypes.find((p) => p.id === process.process_type)?.title}
+              {isSpecificVisa
+                ? visaTypes.find(v => v.id === process.process_type)?.name
+                : processTypes.find((p) => p.id === process.process_type)?.title}
             </p>
           </div>
           <button
