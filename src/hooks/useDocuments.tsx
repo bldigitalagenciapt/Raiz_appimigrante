@@ -73,7 +73,7 @@ export function useDocuments() {
           contentType = mimeTypes[fileExt] || 'application/octet-stream';
         }
 
-        const bucket = isSecure ? 'secure_documents' : 'documents';
+        const bucket = 'secure_documents';
 
         // Upload to Supabase Storage
         const { error: uploadError } = await supabase.storage
@@ -85,11 +85,12 @@ export function useDocuments() {
 
         if (uploadError) {
           // Log error as requested to debug 403 or bucket issues
+          console.error('Erro detalhado (Storage):', uploadError);
           console.error(`[CRITICAL] Supabase Storage Error!`, {
             bucket,
             fileName,
             error: uploadError.message,
-            tip: "Certifique-se de que os buckets 'documents' e 'secure_documents' foram criados no SQL Editor.",
+            tip: "Certifique-se de que o bucket 'secure_documents' foi criado no SQL Editor.",
             fullError: uploadError
           });
           throw uploadError;
@@ -107,7 +108,7 @@ export function useDocuments() {
         .schema('public')
         .from('documents')
         .insert({
-          user_id: user.id,
+          user_id: user.id, // Supabase user.id is already a UUID string
           name,
           category,
           file_url: fileUrl,
@@ -117,6 +118,7 @@ export function useDocuments() {
         .single();
 
       if (error) {
+        console.error('Erro detalhado (Database):', error);
         console.error('[DATABASE] Error inserting document record:', {
           message: error.message,
           hint: error.hint,
@@ -138,6 +140,7 @@ export function useDocuments() {
     },
     onError: (error: any) => {
       logger.error('Error adding document', { error });
+      console.error('Erro detalhado (Mutation):', error);
       console.error('[UPLOAD_FAILED] useDocuments mutation error:', {
         message: error.message,
         hint: error.hint,
