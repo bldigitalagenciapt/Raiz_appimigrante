@@ -27,6 +27,7 @@ import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import DocumentCategories from "./pages/settings/DocumentCategories";
 import QuickAccess from "./pages/settings/QuickAccess";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -196,6 +197,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <QuickAccess />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reset-password"
+        element={
+          <ProtectedRoute>
+            <ResetPassword />
           </ProtectedRoute>
         }
       />

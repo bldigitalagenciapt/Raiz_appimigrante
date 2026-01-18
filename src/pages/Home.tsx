@@ -15,8 +15,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNotes } from '@/hooks/useNotes';
 import { useDocuments } from '@/hooks/useDocuments';
 import { SkeletonList, SkeletonCard } from '@/components/ui/skeleton-card';
+import { useUserDocuments } from '@/hooks/useUserDocuments';
 import { toast } from 'sonner';
 import { cn } from "@/lib/utils";
+import { TrendingUp, AlertCircle } from 'lucide-react';
 
 type NumberField = 'nif' | 'niss' | 'sns' | 'passport';
 
@@ -27,6 +29,7 @@ export default function Home() {
   const { process: aimaProcess } = useAimaProcess();
   const { notes } = useNotes();
   const { documents } = useDocuments();
+  const { userDocuments, loading: docsLoading } = useUserDocuments();
   const [showNumberDialog, setShowNumberDialog] = useState<NumberField | null>(null);
   const [tempNumber, setTempNumber] = useState('');
   const [saving, setSaving] = useState(false);
@@ -90,7 +93,7 @@ export default function Home() {
   const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
   const noteDeadlines = notes.filter(n => n.reminder_date?.startsWith(tomorrowStr));
-  const aimaDeadlines = aimaProcess?.important_dates?.filter(d => d.date === tomorrowStr) || [];
+  const aimaDeadlines = aimaProcess?.important_dates?.filter(d => (d as any).date === tomorrowStr) || [];
 
   if (noteDeadlines.length > 0 || aimaDeadlines.length > 0) {
     alerts.push({
@@ -100,6 +103,11 @@ export default function Home() {
       onAction: () => navigate(noteDeadlines.length > 0 ? '/notes' : '/aima'),
     });
   }
+
+  // Calculate Progress
+  const totalChecklistItems = userDocuments.length || 0;
+  const completedChecklistItems = userDocuments.filter(ud => ud.is_completed).length;
+  const docProgress = totalChecklistItems > 0 ? Math.round((completedChecklistItems / totalChecklistItems) * 100) : 0;
 
   const starredNotes = notes.filter(n => n.is_important);
 
@@ -158,6 +166,29 @@ export default function Home() {
               <Settings className="w-5 h-5 text-muted-foreground" />
             </button>
           </div>
+        </div>
+
+        {/* Documentation Progress Bar */}
+        <div className="mb-8 p-5 bg-primary/5 rounded-3xl border border-primary/10">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              <h2 className="font-bold text-foreground">Sua Documentação</h2>
+            </div>
+            <span className="text-primary font-bold">{docProgress}%</span>
+          </div>
+          <div className="h-3 bg-primary/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-primary rounded-full transition-all duration-1000 ease-out"
+              style={{ width: `${docProgress}%` }}
+            />
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground flex items-center gap-1.5">
+            <AlertCircle className="w-3.5 h-3.5" />
+            {totalChecklistItems > 0
+              ? `${completedChecklistItems} de ${totalChecklistItems} documentos do visto concluídos.`
+              : "Configure seu visto na aba Imigração para ver o progresso."}
+          </p>
         </div>
 
         {/* Alerts */}
@@ -259,24 +290,28 @@ export default function Home() {
               value={profile?.nif || ''}
               placeholder="Adicionar"
               onClick={() => openNumberDialog('nif')}
+              isSecure={true}
             />
             <QuickAccessCard
               label="NISS"
               value={profile?.niss || ''}
               placeholder="Adicionar"
               onClick={() => openNumberDialog('niss')}
+              isSecure={true}
             />
             <QuickAccessCard
               label="SNS"
               value={profile?.sns || ''}
               placeholder="Adicionar"
               onClick={() => openNumberDialog('sns')}
+              isSecure={true}
             />
             <QuickAccessCard
               label="Passaporte"
               value={profile?.passport || ''}
               placeholder="Adicionar"
               onClick={() => openNumberDialog('passport')}
+              isSecure={true}
             />
           </div>
         </div>

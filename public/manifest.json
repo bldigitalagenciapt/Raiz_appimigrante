@@ -1,0 +1,17 @@
+{
+  "name": "VOY - Imigrante Legal",
+  "short_name": "VOY",
+  "description": "VOY. A porta de entrada para o seu futuro.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0F172A",
+  "icons": [
+    {
+      "src": "/pwa-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -13,6 +13,8 @@ import { DocumentViewer } from '@/components/documents/DocumentViewer';
 import { useCategories } from '@/hooks/useCategories';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
+import { Switch } from '@/components/ui/switch';
+import { Shield, ShieldCheck } from 'lucide-react';
 
 const defaultCategories = [
   { id: 'immigration' as const, icon: FileText, label: 'Imigração', color: 'bg-primary/15 text-primary' },
@@ -45,6 +47,7 @@ export default function Documents() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editingDoc, setEditingDoc] = useState<{ id: string; name: string } | null>(null);
+  const [isSecure, setIsSecure] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const [viewingDoc, setViewingDoc] = useState<typeof documents[0] | null>(null);
@@ -53,10 +56,11 @@ export default function Documents() {
   const handleAddDocument = async () => {
     if (documentName) {
       setSaving(true);
-      await addDocument(documentName, selectedCategory, selectedFile || undefined);
+      await addDocument(documentName, selectedCategory, selectedFile || undefined, isSecure);
       setSaving(false);
       setDocumentName('');
       setSelectedFile(null);
+      setIsSecure(false);
       setShowAddDialog(false);
     }
   };
@@ -373,6 +377,26 @@ export default function Documents() {
               </div>
             )}
 
+            {/* Secure Upload Toggle */}
+            <div className="flex items-center justify-between p-4 bg-muted rounded-xl border border-border">
+              <div className="flex items-center gap-3">
+                <div className={cn(
+                  "w-10 h-10 rounded-lg flex items-center justify-center transition-colors",
+                  isSecure ? "bg-primary/20 text-primary" : "bg-muted-foreground/10 text-muted-foreground"
+                )}>
+                  {isSecure ? <ShieldCheck className="w-5 h-5" /> : <Shield className="w-5 h-5" />}
+                </div>
+                <div>
+                  <p className="font-semibold text-sm">Pasta Segura</p>
+                  <p className="text-xs text-muted-foreground">Criptografado e protegido</p>
+                </div>
+              </div>
+              <Switch
+                checked={isSecure}
+                onCheckedChange={setIsSecure}
+              />
+            </div>
+
             {/* Document Name */}
             <div className="space-y-2">
               <Label htmlFor="docName">Nome do documento</Label>
@@ -434,7 +458,12 @@ export default function Documents() {
                 className="flex-1 h-12 rounded-xl"
                 type="submit"
               >
-                {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Salvar'}
+                {saving ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Enviando...</span>
+                  </div>
+                ) : 'Salvar Documento'}
               </Button>
             </div>
           </div>

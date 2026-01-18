@@ -25,6 +25,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useAimaProcess } from '@/hooks/useAimaProcess';
+import { useUserDocuments } from '@/hooks/useUserDocuments';
 import { visaTypes, VisaType } from '@/data/visaTypes';
 import { toast } from '@/hooks/use-toast';
 
@@ -100,6 +101,7 @@ const getStepsForProcess = (type: string) => {
 
 export default function Aima() {
   const { process, loading, selectProcessType, toggleStep, addDate, addProtocol, clearProcess, updateProcess } = useAimaProcess();
+  const { userDocuments, toggleDocument } = useUserDocuments();
   const [showDateDialog, setShowDateDialog] = useState(false);
   const [showProtocolDialog, setShowProtocolDialog] = useState(false);
   const [newDate, setNewDate] = useState({ label: '', date: '' });
@@ -239,12 +241,31 @@ export default function Aima() {
                 Documentos geralmente exigidos
               </h2>
               <div className="space-y-2">
-                {selectedVisa.requiredDocuments.map((doc, index) => (
-                  <div key={index} className="flex items-start gap-3 p-3 bg-card rounded-xl border border-border">
-                    <Check className="w-4 h-4 text-success mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">{doc}</span>
-                  </div>
-                ))}
+                {selectedVisa.requiredDocuments.map((doc, index) => {
+                  const isSavedDoc = userDocuments.find(ud => ud.document_name === doc)?.is_completed;
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => toggleDocument(doc, !!isSavedDoc)}
+                      className={cn(
+                        "w-full flex items-start gap-3 p-3 rounded-xl border transition-all text-left",
+                        isSavedDoc
+                          ? "bg-success/10 border-success/30"
+                          : "bg-card border-border hover:border-primary/30"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-5 h-5 rounded flex items-center justify-center flex-shrink-0 mt-0.5 border-2 transition-all",
+                        isSavedDoc ? "bg-success border-success" : "border-muted-foreground/30"
+                      )}>
+                        {isSavedDoc && <Check className="w-3.5 h-3.5 text-success-foreground" />}
+                      </div>
+                      <span className={cn("text-sm", isSavedDoc && "line-through text-muted-foreground")}>
+                        {doc}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

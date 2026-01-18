@@ -40,7 +40,7 @@ export function useDocuments() {
   });
 
   const addDocumentMutation = useMutation({
-    mutationFn: async ({ name, category, file }: { name: string; category: string; file?: File }) => {
+    mutationFn: async ({ name, category, file, isSecure = false }: { name: string; category: string; file?: File, isSecure?: boolean }) => {
       if (!user) throw new Error('Not authenticated');
 
       let fileUrl = null;
@@ -67,8 +67,9 @@ export function useDocuments() {
           contentType = mimeTypes[fileExt] || 'application/octet-stream';
         }
 
+        const bucket = isSecure ? 'secure_documents' : 'documents';
         const { error: uploadError } = await supabase.storage
-          .from('documents')
+          .from(bucket)
           .upload(fileName, file, {
             contentType,
             upsert: false,
@@ -77,7 +78,7 @@ export function useDocuments() {
         if (uploadError) throw uploadError;
 
         const { data: { publicUrl } } = supabase.storage
-          .from('documents')
+          .from(bucket)
           .getPublicUrl(fileName);
 
         fileUrl = publicUrl;
@@ -185,7 +186,7 @@ export function useDocuments() {
   return {
     documents,
     loading,
-    addDocument: (name: string, category: string, file?: File) => addDocumentMutation.mutateAsync({ name, category, file }),
+    addDocument: (name: string, category: string, file?: File, isSecure?: boolean) => addDocumentMutation.mutateAsync({ name, category, file, isSecure }),
     updateDocument: (id: string, updates: { name?: string; category?: string }) => updateDocumentMutation.mutateAsync({ id, updates }),
     deleteDocument: deleteDocumentMutation.mutateAsync,
     refetch,

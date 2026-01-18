@@ -13,8 +13,10 @@ const emailSchema = z.string().email('Email inválido').max(255, 'Email muito lo
 
 export default function Auth() {
   const navigate = useNavigate();
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, sendPasswordResetEmail } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [isResetSent, setIsResetSent] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -91,6 +93,56 @@ export default function Auth() {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      emailSchema.parse(email);
+    } catch (err) {
+      setError('Insira um email válido');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await sendPasswordResetEmail(email);
+      if (error) {
+        setError('Erro ao enviar email de recuperação');
+      } else {
+        setIsResetSent(true);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (isResetSent) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
+        <div className="w-full max-w-sm text-center">
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Mail className="w-10 h-10 text-primary" />
+          </div>
+          <h2 className="text-2xl font-bold mb-2">Verifique seu email</h2>
+          <p className="text-muted-foreground mb-8">
+            Enviamos um link de recuperação para <strong>{email}</strong>. Por favor, verifique sua caixa de entrada e spam.
+          </p>
+          <Button
+            onClick={() => {
+              setIsResetSent(false);
+              setIsForgotPassword(false);
+              setIsLogin(true);
+            }}
+            className="w-full h-12 rounded-xl"
+          >
+            Voltar para o login
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
@@ -105,12 +157,12 @@ export default function Auth() {
               A porta de entrada para o seu futuro
             </p>
             <p className="text-muted-foreground mt-2">
-              {isLogin ? 'Bem-vindo de volta!' : 'Crie sua conta'}
+              {isForgotPassword ? 'Recuperar sua senha' : isLogin ? 'Bem-vindo de volta!' : 'Crie sua conta'}
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={isForgotPassword ? handleForgotPassword : handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
@@ -127,62 +179,78 @@ export default function Auth() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••"
-                  className="h-12 pl-10 pr-10 rounded-xl"
-                  disabled={loading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
+            {!isForgotPassword && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Senha</Label>
+                  {isLogin && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsForgotPassword(true);
+                        setError('');
+                      }}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      Esqueceu a senha?
+                    </button>
                   )}
-                </button>
-              </div>
-
-              {/* Password strength indicator for signup */}
-              {!isLogin && password.length > 0 && (
-                <div className="mt-2">
-                  <div className="flex gap-1 mb-1">
-                    <div className={cn(
-                      "h-1 flex-1 rounded",
-                      passwordStrength === 'weak' ? 'bg-destructive' :
-                        passwordStrength === 'medium' ? 'bg-warning' : 'bg-success'
-                    )} />
-                    <div className={cn(
-                      "h-1 flex-1 rounded",
-                      passwordStrength === 'medium' ? 'bg-warning' :
-                        passwordStrength === 'strong' ? 'bg-success' : 'bg-muted'
-                    )} />
-                    <div className={cn(
-                      "h-1 flex-1 rounded",
-                      passwordStrength === 'strong' ? 'bg-success' : 'bg-muted'
-                    )} />
-                  </div>
-                  <p className={cn(
-                    "text-xs",
-                    passwordStrength === 'weak' ? 'text-destructive' :
-                      passwordStrength === 'medium' ? 'text-warning' : 'text-success'
-                  )}>
-                    Força: {passwordStrength === 'weak' ? 'Fraca' :
-                      passwordStrength === 'medium' ? 'Média' : 'Forte'}
-                  </p>
                 </div>
-              )}
-            </div>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••"
+                    className="h-12 pl-10 pr-10 rounded-xl"
+                    disabled={loading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+
+                {/* Password strength indicator for signup */}
+                {!isLogin && password.length > 0 && (
+                  <div className="mt-2">
+                    <div className="flex gap-1 mb-1">
+                      <div className={cn(
+                        "h-1 flex-1 rounded",
+                        passwordStrength === 'weak' ? 'bg-destructive' :
+                          passwordStrength === 'medium' ? 'bg-warning' : 'bg-success'
+                      )} />
+                      <div className={cn(
+                        "h-1 flex-1 rounded",
+                        passwordStrength === 'medium' ? 'bg-warning' :
+                          passwordStrength === 'strong' ? 'bg-success' : 'bg-muted'
+                      )} />
+                      <div className={cn(
+                        "h-1 flex-1 rounded",
+                        passwordStrength === 'strong' ? 'bg-success' : 'bg-muted'
+                      )} />
+                    </div>
+                    <p className={cn(
+                      "text-xs",
+                      passwordStrength === 'weak' ? 'text-destructive' :
+                        passwordStrength === 'medium' ? 'text-warning' : 'text-success'
+                    )}>
+                      Força: {passwordStrength === 'weak' ? 'Fraca' :
+                        passwordStrength === 'medium' ? 'Média' : 'Forte'}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {error && (
               <div className="p-3 rounded-xl bg-destructive/10 text-destructive text-sm text-center">
@@ -197,6 +265,8 @@ export default function Auth() {
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
+              ) : isForgotPassword ? (
+                'Enviar link de recuperação'
               ) : isLogin ? (
                 'Entrar'
               ) : (
@@ -208,17 +278,21 @@ export default function Auth() {
           {/* Toggle */}
           <div className="mt-6 text-center">
             <p className="text-muted-foreground">
-              {isLogin ? 'Não tem uma conta?' : 'Já tem uma conta?'}
+              {isForgotPassword ? 'Lembrou a senha?' : isLogin ? 'Não tem uma conta?' : 'Já tem uma conta?'}
             </p>
             <button
               onClick={() => {
-                setIsLogin(!isLogin);
+                if (isForgotPassword) {
+                  setIsForgotPassword(false);
+                } else {
+                  setIsLogin(!isLogin);
+                }
                 setError('');
               }}
               className="text-primary font-semibold hover:underline mt-1"
               disabled={loading}
             >
-              {isLogin ? 'Criar conta' : 'Fazer login'}
+              {isForgotPassword ? 'Voltar para login' : isLogin ? 'Criar conta' : 'Fazer login'}
             </button>
           </div>
 
