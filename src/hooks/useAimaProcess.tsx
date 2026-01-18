@@ -50,6 +50,12 @@ export function useAimaProcess() {
 
       if (error) {
         logger.error('Error fetching AIMA process', { error });
+        console.error('Error fetching AIMA process:', {
+          message: error.message,
+          hint: (error as any).hint,
+          details: (error as any).details,
+          fullError: error
+        });
         throw error;
       }
 
@@ -93,7 +99,15 @@ export function useAimaProcess() {
           .from('aima_processes')
           .update(dbUpdates)
           .eq('user_id', user.id);
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating AIMA process:', {
+            message: error.message,
+            hint: error.hint,
+            details: error.details,
+            fullError: error
+          });
+          throw error;
+        }
       } else {
         const { data, error } = await supabase
           .from('aima_processes')
@@ -107,7 +121,15 @@ export function useAimaProcess() {
           })
           .select()
           .single();
-        if (error) throw error;
+        if (error) {
+          console.error('Error inserting AIMA process:', {
+            message: error.message,
+            hint: (error as any).hint,
+            details: (error as any).details,
+            fullError: error
+          });
+          throw error;
+        }
         return data;
       }
       return updates;
@@ -119,8 +141,13 @@ export function useAimaProcess() {
         description: "Seu processo foi atualizado com sucesso.",
       });
     },
-    onError: () => {
-      logger.error('Error updating AIMA process');
+    onError: (error: any) => {
+      logger.error('Error updating AIMA process', { error });
+      console.error('useAimaProcess mutation error:', {
+        message: error.message,
+        hint: error.hint,
+        fullError: error
+      });
       toast({
         variant: "destructive",
         title: "Erro ao salvar",

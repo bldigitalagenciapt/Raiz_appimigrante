@@ -340,7 +340,7 @@ export default function Aima() {
                   key={visa.id}
                   onClick={() => setSelectedVisa(visa)}
                   className={cn(
-                    'w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all animate-slide-up',
+                    'w-full flex items-center gap-4 p-4 rounded-3xl border-2 transition-all animate-slide-up active:scale-[0.97]',
                     isSaved
                       ? 'bg-info/5 border-info'
                       : 'bg-card border-border hover:border-primary/50'
@@ -403,7 +403,7 @@ export default function Aima() {
                   key={processType.id}
                   onClick={() => handleSelectProcess(processType.id)}
                   disabled={saving}
-                  className="w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-border bg-card hover:border-primary/50 transition-all animate-slide-up disabled:opacity-50"
+                  className="w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-border bg-card hover:border-primary/50 transition-all animate-slide-up disabled:opacity-50 active:scale-[0.97]"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">

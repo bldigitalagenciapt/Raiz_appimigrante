@@ -196,7 +196,7 @@ export default function Home() {
         </div>
 
         {/* Documentation Progress Bar */}
-        <div className="mb-8 p-5 bg-primary/5 rounded-3xl border border-primary/10">
+        <div className="mb-8 p-5 bg-primary/5 rounded-3xl border border-primary/10 select-none">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
@@ -237,7 +237,10 @@ export default function Home() {
         {/* Dashboard Widgets */}
         <div className="grid grid-cols-2 gap-4 mb-8">
           {/* Profile Progress */}
-          <div className="bg-card border rounded-2xl p-4 shadow-sm space-y-3">
+          <div
+            className="bg-card border rounded-3xl p-4 shadow-sm space-y-3 active:scale-95 transition-transform"
+            onClick={() => navigate('/profile')}
+          >
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-muted-foreground">Perfil</span>
               <span className="text-xs font-bold text-primary">{completionPercentage}%</span>
@@ -255,7 +258,7 @@ export default function Home() {
 
           {/* AIMA Status Summary - Restored to original size with specific name */}
           <div
-            className="bg-card border rounded-2xl p-4 shadow-sm space-y-3 cursor-pointer hover:bg-muted/50 transition-colors"
+            className="bg-card border rounded-3xl p-4 shadow-sm space-y-3 cursor-pointer hover:bg-muted/50 active:scale-95 transition-transform"
             onClick={() => navigate('/aima')}
           >
             <div className="flex items-center justify-between">
@@ -293,7 +296,7 @@ export default function Home() {
                 <div
                   key={note.id}
                   onClick={() => navigate('/notes')}
-                  className="min-w-[160px] max-w-[200px] bg-card border rounded-2xl p-4 shadow-sm space-y-2 cursor-pointer hover:bg-muted/50 transition-colors"
+                  className="min-w-[160px] max-w-[200px] bg-card border rounded-3xl p-4 shadow-sm space-y-2 cursor-pointer hover:bg-muted/50 active:scale-95 transition-transform"
                 >
                   <div className="flex items-center justify-between">
                     <StickyNote className="w-4 h-4 text-primary" />

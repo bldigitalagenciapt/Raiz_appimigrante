@@ -231,7 +231,8 @@ export default function Documents() {
               return (
                 <div
                   key={doc.id}
-                  className="flex items-center gap-4 p-4 bg-card rounded-2xl border border-border"
+                  className="flex items-center gap-4 p-4 bg-card rounded-2xl border border-border active:scale-[0.98] transition-transform select-none"
+                  onClick={() => setViewingDoc(doc)}
                 >
                   <div className={cn('w-12 h-12 rounded-xl flex items-center justify-center', category?.color || 'bg-muted')}>
                     <Icon className="w-6 h-6" />
@@ -319,7 +320,7 @@ export default function Documents() {
             <div className="grid grid-cols-3 gap-3">
               <button
                 onClick={() => cameraInputRef.current?.click()}
-                className="flex flex-col items-center gap-2 p-4 rounded-xl bg-muted hover:bg-muted/80 transition-colors"
+                className="flex flex-col items-center gap-2 p-4 rounded-xl bg-muted hover:bg-muted/80 transition-all active:scale-90"
                 type="button"
               >
                 <Camera className="w-6 h-6 text-primary" />
@@ -327,7 +328,7 @@ export default function Documents() {
               </button>
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="flex flex-col items-center gap-2 p-4 rounded-xl bg-muted hover:bg-muted/80 transition-colors"
+                className="flex flex-col items-center gap-2 p-4 rounded-xl bg-muted hover:bg-muted/80 transition-all active:scale-90"
                 type="button"
               >
                 <Upload className="w-6 h-6 text-primary" />

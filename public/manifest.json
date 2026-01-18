@@ -3,15 +3,28 @@
   "short_name": "VOY",
   "description": "VOY. A porta de entrada para o seu futuro.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0F172A",
+  "orientation": "portrait-primary",
+  "background_color": "#F8FAFC",
+  "theme_color": "#3B82F6",
   "icons": [
+    {
+      "src": "/pwa-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/pwa-icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+  "categories": [
+    "productivity",
+    "finance",
+    "utilities"
   ]
 }

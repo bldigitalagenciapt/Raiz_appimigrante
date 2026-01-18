@@ -116,7 +116,7 @@ export default function Notes() {
               setShowAddDialog(true);
             }}
             size="sm"
-            className="rounded-xl gap-2"
+            className="rounded-xl gap-2 active:scale-95 transition-transform"
           >
             <Plus className="w-4 h-4" />
             Nova
@@ -142,11 +142,12 @@ export default function Notes() {
               <div
                 key={note.id}
                 className={cn(
-                  'p-4 rounded-2xl border transition-all shadow-sm',
+                  'p-4 rounded-2xl border transition-all shadow-sm active:scale-[0.98] select-none',
                   note.is_important
                     ? 'bg-yellow-50/50 border-yellow-200'
                     : 'bg-[#F8FAFC] border-slate-200'
                 )}
+                onClick={() => handleEditNote(note.id)}
               >
                 <div className="flex items-start gap-3">
                   <button

@@ -57,7 +57,8 @@ export function QuickAccessCard({
       {isSecure && value && (
         <button
           onClick={toggleVisibility}
-          className="absolute top-2 right-2 p-1.5 rounded-lg bg-background/50 backdrop-blur-sm border border-border opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute top-1.5 right-1.5 p-2 rounded-xl bg-background/80 backdrop-blur-sm border border-border shadow-sm active:scale-90 transition-all z-10"
+          aria-label={isVisible ? "Esconder valor" : "Mostrar valor"}
         >
           {isVisible ? (
             <EyeOff className="w-3.5 h-3.5 text-muted-foreground" />

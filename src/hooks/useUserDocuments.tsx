@@ -25,7 +25,12 @@ export function useUserDocuments() {
                 .eq('user_id', user.id);
 
             if (error) {
-                console.error('Error fetching user documents:', error);
+                console.error('Error fetching user documents:', {
+                    message: error.message,
+                    hint: (error as any).hint,
+                    details: (error as any).details,
+                    fullError: error
+                });
                 throw error;
             }
             return (data as any[]) as UserDocument[];
@@ -57,8 +62,13 @@ export function useUserDocuments() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['user_documents', user?.id] });
         },
-        onError: (error) => {
-            console.error('Error updating document status:', error);
+        onError: (error: any) => {
+            console.error('Error updating document status:', {
+                message: error.message,
+                hint: error.hint,
+                details: error.details,
+                fullError: error
+            });
             toast({
                 variant: "destructive",
                 title: "Erro ao salvar",

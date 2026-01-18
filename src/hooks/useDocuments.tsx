@@ -80,7 +80,11 @@ export function useDocuments() {
 
         if (uploadError) {
           // Log error as requested to debug 403 or bucket issues
-          console.error(`Supabase Storage Upload Error (${bucket}):`, uploadError);
+          console.error(`Supabase Storage Upload Error (${bucket}):`, {
+            message: uploadError.message,
+            hint: (uploadError as any).hint,
+            fullError: uploadError
+          });
           throw uploadError;
         }
 
@@ -104,7 +108,15 @@ export function useDocuments() {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error inserting document record:', {
+          message: error.message,
+          hint: error.hint,
+          details: error.details,
+          fullError: error
+        });
+        throw error;
+      }
       return data;
     },
     onSuccess: (data) => {
@@ -116,8 +128,13 @@ export function useDocuments() {
         description: "Seu documento foi adicionado com sucesso.",
       });
     },
-    onError: () => {
-      logger.error('Error adding document');
+    onError: (error: any) => {
+      logger.error('Error adding document', { error });
+      console.error('useDocuments mutation error:', {
+        message: error.message,
+        hint: error.hint,
+        fullError: error
+      });
       toast({
         variant: "destructive",
         title: "Erro ao salvar",
