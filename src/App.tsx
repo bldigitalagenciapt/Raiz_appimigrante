@@ -29,6 +29,7 @@ import DocumentCategories from "./pages/settings/DocumentCategories";
 import QuickAccess from "./pages/settings/QuickAccess";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
+import Index from "./pages/Index";
 import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
@@ -63,7 +64,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (user) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
@@ -72,8 +73,8 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   return (
     <Routes>
-      {/* Redirect root to home or auth */}
-      <Route path="/" element={<Navigate to="/home" replace />} />
+      {/* Root: Index redireciona para /home ou /onboarding/welcome conforme hasCompletedOnboarding */}
+      <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
 
       {/* Auth Route */}
       <Route
