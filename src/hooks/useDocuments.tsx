@@ -75,8 +75,8 @@ export function useDocuments() {
           contentType = mimeTypes[fileExt] || 'application/octet-stream';
         }
 
-        // Always use secure_documents bucket
-        const bucket = 'secure_documents';
+        // Always use voy_secure_docs bucket
+        const bucket = 'voy_secure_docs';
 
         // STEP 1: Upload to Supabase Storage FIRST
         const { error: uploadError } = await supabase.storage
@@ -111,10 +111,11 @@ export function useDocuments() {
       // STEP 2: Insert to database ONLY after successful upload
       const { data, error } = await supabase
         .schema('public')
-        .from('user_documents')
+        .from('documents')
         .insert({
           user_id: user.id,
-          document_name: name,
+          name,
+          category,
           file_url: fileUrl,
           file_type: fileType,
         })

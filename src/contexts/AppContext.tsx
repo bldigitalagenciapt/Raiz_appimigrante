@@ -217,39 +217,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     importantDates: [],
   });
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem('voy-app-state');
-    if (saved) {
-      try {
-        const state = JSON.parse(saved);
-        if (state.language) setLanguage(state.language);
-        if (state.userProfile) setUserProfile(state.userProfile);
-        if (state.hasCompletedOnboarding) setHasCompletedOnboarding(state.hasCompletedOnboarding);
-        if (state.userNumbers) setUserNumbers(state.userNumbers);
-        if (state.documents) setDocuments(state.documents);
-        if (state.notes) setNotes(state.notes);
-        if (state.aimaProcess) setAimaProcess(state.aimaProcess);
-      } catch (e) {
-        console.error('Error loading state:', e);
-      }
-    }
-  }, []);
-
-  // Save to localStorage on changes
-  useEffect(() => {
-    const state = {
-      language,
-      userProfile,
-      hasCompletedOnboarding,
-      userNumbers,
-      documents,
-      notes,
-      aimaProcess,
-    };
-    localStorage.setItem('voy-app-state', JSON.stringify(state));
-  }, [language, userProfile, hasCompletedOnboarding, userNumbers, documents, notes, aimaProcess]);
-
   const t = (key: string): string => {
     return translations[language][key] || key;
   };
