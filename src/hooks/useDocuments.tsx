@@ -52,11 +52,13 @@ export function useDocuments() {
       let fileType = null;
 
       if (file) {
-        // Construct the file path as requested: userId/filename
-        const fileName = `${user.id}/${file.name}`;
+        // Determine file extension
+        const fileExt = file.name.split('.').pop()?.toLowerCase() || 'pdf';
+
+        // Use simplified file naming: documento_${timestamp}.${extension}
+        const fileName = `documento_${Date.now()}.${fileExt}`;
 
         // Determine content type
-        const fileExt = file.name.split('.').pop()?.toLowerCase() || '';
         let contentType = file.type;
         if (!contentType || contentType === 'application/octet-stream') {
           const mimeTypes: Record<string, string> = {
@@ -73,29 +75,31 @@ export function useDocuments() {
           contentType = mimeTypes[fileExt] || 'application/octet-stream';
         }
 
+        // Always use secure_documents bucket
         const bucket = 'secure_documents';
 
-        // Upload to Supabase Storage
+        // STEP 1: Upload to Supabase Storage FIRST
         const { error: uploadError } = await supabase.storage
           .from(bucket)
           .upload(fileName, file, {
             contentType,
-            upsert: true, // Use upsert to allow re-uploading the same file
+            upsert: true,
           });
 
         if (uploadError) {
-          // Log error as requested to debug 403 or bucket issues
-          console.error('Erro detalhado (Storage):', uploadError);
-          console.error(`[CRITICAL] Supabase Storage Error!`, {
+          // Detailed error logging as requested
+          console.error('Erro detalhado:', uploadError.message, uploadError.stack);
+          console.error('[STORAGE UPLOAD FAILED]', {
             bucket,
             fileName,
-            error: uploadError.message,
-            tip: "Certifique-se de que o bucket 'secure_documents' foi criado no SQL Editor.",
+            message: uploadError.message,
+            stack: uploadError.stack,
             fullError: uploadError
           });
           throw uploadError;
         }
 
+        // Get public URL only after successful upload
         const { data: { publicUrl } } = supabase.storage
           .from(bucket)
           .getPublicUrl(fileName);
@@ -104,13 +108,13 @@ export function useDocuments() {
         fileType = contentType;
       }
 
+      // STEP 2: Insert to database ONLY after successful upload
       const { data, error } = await supabase
         .schema('public')
-        .from('documents')
+        .from('user_documents')
         .insert({
-          user_id: user.id, // Supabase user.id is already a UUID string
-          name,
-          category,
+          user_id: user.id,
+          document_name: name,
           file_url: fileUrl,
           file_type: fileType,
         })
@@ -118,9 +122,10 @@ export function useDocuments() {
         .single();
 
       if (error) {
-        console.error('Erro detalhado (Database):', error);
-        console.error('[DATABASE] Error inserting document record:', {
+        console.error('Erro detalhado:', error.message, error.stack);
+        console.error('[DATABASE INSERT FAILED]', {
           message: error.message,
+          stack: error.stack,
           hint: error.hint,
           details: error.details,
           fullError: error
@@ -140,9 +145,10 @@ export function useDocuments() {
     },
     onError: (error: any) => {
       logger.error('Error adding document', { error });
-      console.error('Erro detalhado (Mutation):', error);
+      console.error('Erro detalhado:', error.message, error.stack);
       console.error('[UPLOAD_FAILED] useDocuments mutation error:', {
         message: error.message,
+        stack: error.stack,
         hint: error.hint,
         details: error.details,
         fullError: error
@@ -150,9 +156,7 @@ export function useDocuments() {
       toast({
         variant: "destructive",
         title: "Erro ao salvar",
-        description: error.message?.includes('bucket')
-          ? "Erro de configuração: Bucket não encontrado."
-          : "Não foi possível fazer upload. Verifique sua conexão.",
+        description: error.message || "Não foi possível fazer upload do documento.",
       });
     }
   });
