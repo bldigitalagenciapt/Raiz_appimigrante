@@ -18,6 +18,7 @@ export interface Profile {
   theme: string;
   display_name?: string | null;
   avatar_url?: string | null;
+  custom_quick_access?: { id: string; label: string; value: string }[] | null;
 }
 
 export function useProfile() {

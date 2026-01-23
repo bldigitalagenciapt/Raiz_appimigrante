@@ -32,22 +32,29 @@ export default function Settings() {
     setShowThemeDialog(false);
   };
 
-  if (loading) {
-    return (
-      <MobileLayout showNav={false}>
-        <div className="flex items-center justify-center h-full">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        </div>
-      </MobileLayout>
-    );
-  }
+  const [tempName, setTempName] = useState(profile?.display_name || '');
+  const [showNameDialog, setShowNameDialog] = useState(false);
+  const [savingName, setSavingName] = useState(false);
+
+  const handleSaveName = async () => {
+    setSavingName(true);
+    await updateProfile({ display_name: tempName });
+    setSavingName(false);
+    setShowNameDialog(false);
+  };
 
   const settingsItems = [
+    {
+      id: 'profile-name',
+      icon: User,
+      label: 'Nome de Exibição',
+      value: profile?.display_name || user?.email?.split('@')[0],
+      onClick: () => setShowNameDialog(true),
+    },
     {
       id: 'profile',
       icon: User,
       label: 'Meu Perfil',
-      value: user?.email?.split('@')[0],
       onClick: () => navigate('/profile'),
     },
     {
@@ -83,6 +90,16 @@ export default function Settings() {
       onClick: () => { },
     },
   ];
+
+  if (loading) {
+    return (
+      <MobileLayout showNav={false}>
+        <div className="flex items-center justify-center h-full">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </MobileLayout>
+    );
+  }
 
   return (
     <MobileLayout showNav={false}>
@@ -221,6 +238,35 @@ export default function Settings() {
             >
               <span className="font-medium">🌙 Escuro</span>
             </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Name Dialog */}
+      <Dialog open={showNameDialog} onOpenChange={setShowNameDialog}>
+        <DialogContent className="max-w-[calc(100vw-2rem)] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Editar nome</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Nome</label>
+              <input
+                type="text"
+                value={tempName}
+                onChange={(e) => setTempName(e.target.value)}
+                className="w-full p-3 rounded-xl border border-input bg-background"
+                placeholder="Seu nome"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowNameDialog(false)} className="flex-1">
+                Cancelar
+              </Button>
+              <Button onClick={handleSaveName} disabled={savingName} className="flex-1">
+                {savingName ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Salvar'}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

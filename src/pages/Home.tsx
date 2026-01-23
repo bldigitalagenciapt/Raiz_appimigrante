@@ -34,12 +34,12 @@ type NumberField = 'nif' | 'niss' | 'sns' | 'passport';
 export default function Home() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { profile, updateNumber, loading: profileLoading } = useProfile();
+  const { profile, updateNumber, updateProfile, loading: profileLoading } = useProfile();
   const { process: aimaProcess } = useAimaProcess(); // Corrected destructuring to 'process'
   const { notes } = useNotes();
   const { documents } = useDocuments();
   const { userDocuments, loading: docsLoading } = useUserDocuments(); // Consolidated destructuring
-  const [showNumberDialog, setShowNumberDialog] = useState<NumberField | null>(null);
+  const [showNumberDialog, setShowNumberDialog] = useState<string | null>(null);
   const [tempNumber, setTempNumber] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -47,7 +47,18 @@ export default function Home() {
     if (showNumberDialog) {
       try {
         setSaving(true);
-        await updateNumber(showNumberDialog, tempNumber);
+        // Check if it's a standard field or a custom one
+        const standardFields = ['nif', 'niss', 'sns', 'passport'];
+        if (standardFields.includes(showNumberDialog as string)) {
+          await updateNumber(showNumberDialog as NumberField, tempNumber);
+        } else {
+          // Update custom block value
+          const customBlocks = profile?.custom_quick_access || [];
+          const updatedBlocks = customBlocks.map((b) =>
+            b.label === showNumberDialog ? { ...b, value: tempNumber } : b
+          );
+          await updateProfile({ custom_quick_access: updatedBlocks });
+        }
         toast.success(`${getDialogTitle(showNumberDialog)} atualizado com sucesso!`);
         setShowNumberDialog(null);
         setTempNumber('');
@@ -70,13 +81,13 @@ export default function Home() {
   const completedFields = profileFields.filter(field => profile?.[field]).length;
   const completionPercentage = Math.round((completedFields / profileFields.length) * 100);
 
-  const getDialogTitle = (type: NumberField | null) => {
+  const getDialogTitle = (type: string | null) => {
     switch (type) {
       case 'nif': return 'NIF';
       case 'niss': return 'NISS';
       case 'sns': return 'Número SNS';
       case 'passport': return 'Passaporte';
-      default: return '';
+      default: return type || '';
     }
   };
 
@@ -102,7 +113,7 @@ export default function Home() {
   const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
   const noteDeadlines = notes.filter(n => n.reminder_date?.startsWith(tomorrowStr));
-  const aimaDeadlines = aimaProcess?.important_dates?.filter(d => (d as any).date === tomorrowStr) || [];
+  const aimaDeadlines = aimaProcess?.important_dates?.filter(d => d.date === tomorrowStr) || [];
 
   if (noteDeadlines.length > 0 || aimaDeadlines.length > 0) {
     alerts.push({
@@ -178,8 +189,8 @@ export default function Home() {
               onClick={() => navigate('/profile')}
               className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors overflow-hidden"
             >
-              {(profile as any)?.avatar_url ? (
-                <img src={(profile as any).avatar_url} alt="Perfil" className="w-full h-full object-cover" />
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="Perfil" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-sm font-bold text-primary">
                   {user?.email?.charAt(0).toUpperCase()}
@@ -195,28 +206,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Documentation Progress Bar */}
-        <div className="mb-8 p-5 bg-primary/5 rounded-3xl border border-primary/10 select-none">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-primary" />
-              <h2 className="font-bold text-foreground">Sua Documentação</h2>
-            </div>
-            <span className="text-primary font-bold">{docProgress}%</span>
-          </div>
-          <div className="h-3 bg-primary/10 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-primary rounded-full transition-all duration-1000 ease-out"
-              style={{ width: `${docProgress}%` }}
-            />
-          </div>
-          <p className="mt-3 text-xs text-muted-foreground flex items-center gap-1.5">
-            <AlertCircle className="w-3.5 h-3.5" />
-            {totalChecklistItems > 0
-              ? `${completedChecklistItems} de ${totalChecklistItems} documentos do visto concluídos.`
-              : "Configure seu visto na aba Imigração para ver o progresso."}
-          </p>
-        </div>
 
         {/* Alerts */}
         {alerts.length > 0 && (
@@ -316,6 +305,7 @@ export default function Home() {
             Acesso rápido
           </h2>
           <div className="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5">
+            {/* Standard Blocks */}
             <QuickAccessCard
               label="NIF"
               value={profile?.nif || ''}
@@ -344,6 +334,21 @@ export default function Home() {
               onClick={() => openNumberDialog('passport')}
               isSecure={true}
             />
+
+            {/* Custom Blocks Added by User */}
+            {profile?.custom_quick_access?.map((block) => (
+              <QuickAccessCard
+                key={block.id}
+                label={block.label}
+                value={block.value || ''}
+                placeholder="Adicionar"
+                onClick={() => {
+                  setTempNumber(block.value || '');
+                  setShowNumberDialog(block.label); // Use label as type for dialog title
+                }}
+                isSecure={true}
+              />
+            ))}
           </div>
         </div>
 
@@ -384,7 +389,7 @@ export default function Home() {
         <DialogContent className="max-w-[calc(100vw-2rem)] rounded-2xl">
           <DialogHeader>
             <DialogTitle>
-              {profile?.[showNumberDialog!] ? 'Editar' : 'Adicionar'} {getDialogTitle(showNumberDialog)}
+              {profile?.[showNumberDialog as NumberField] ? 'Editar' : 'Adicionar'} {getDialogTitle(showNumberDialog)}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-4">

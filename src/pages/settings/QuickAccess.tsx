@@ -2,16 +2,20 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MobileLayout } from '@/components/layout/MobileLayout';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Star, FileText, Loader2, Check } from 'lucide-react';
+import { ChevronLeft, Star, FileText, Loader2, Check, Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDocuments } from '@/hooks/useDocuments';
 import { useQuickAccess } from '@/hooks/useQuickAccess';
+import { useProfile } from '@/hooks/useProfile';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 export default function QuickAccess() {
   const navigate = useNavigate();
   const { documents, loading: docsLoading } = useDocuments();
   const { quickAccessIds, loading: qaLoading, saveQuickAccess } = useQuickAccess();
-  
+
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
 
@@ -23,7 +27,7 @@ export default function QuickAccess() {
   }, [quickAccessIds, qaLoading]);
 
   const toggleDocument = (docId: string) => {
-    setSelectedIds(prev => 
+    setSelectedIds(prev =>
       prev.includes(docId)
         ? prev.filter(id => id !== docId)
         : [...prev, docId]
@@ -35,6 +39,27 @@ export default function QuickAccess() {
     await saveQuickAccess(selectedIds);
     setSaving(false);
     navigate(-1);
+  };
+
+  const { profile, updateProfile } = useProfile();
+  const [showAddBlock, setShowAddBlock] = useState(false);
+  const [newBlockLabel, setNewBlockLabel] = useState('');
+  const [newBlockValue, setNewBlockValue] = useState('');
+
+  const customBlocks = profile?.custom_quick_access || [];
+
+  const handleAddBlock = async () => {
+    if (!newBlockLabel.trim()) return;
+    const updatedBlocks = [...customBlocks, { label: newBlockLabel, value: newBlockValue, id: Date.now().toString() }];
+    await updateProfile({ custom_quick_access: updatedBlocks });
+    setShowAddBlock(false);
+    setNewBlockLabel('');
+    setNewBlockValue('');
+  };
+
+  const handleDeleteBlock = async (id: string) => {
+    const updatedBlocks = customBlocks.filter((b) => b.id !== id);
+    await updateProfile({ custom_quick_access: updatedBlocks });
   };
 
   if (docsLoading || qaLoading) {
@@ -60,7 +85,38 @@ export default function QuickAccess() {
           </button>
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-foreground">Acesso Rápido</h1>
-            <p className="text-sm text-muted-foreground">Escolha documentos favoritos</p>
+            <p className="text-sm text-muted-foreground">Configurar blocos e documentos</p>
+          </div>
+        </div>
+
+        {/* Custom Blocks Section */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Meus Blocos</h2>
+            <Button variant="ghost" size="sm" onClick={() => setShowAddBlock(true)} className="text-primary h-8 gap-1">
+              <Plus className="w-4 h-4" /> Novo Bloco
+            </Button>
+          </div>
+
+          <div className="space-y-2">
+            {customBlocks.length === 0 ? (
+              <p className="text-xs text-muted-foreground italic px-2">Nenhum bloco personalizado criado.</p>
+            ) : (
+              customBlocks.map((block) => (
+                <div key={block.id} className="flex items-center gap-3 p-4 bg-card border rounded-2xl">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <Star className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{block.label}</p>
+                    <p className="text-xs text-muted-foreground">{block.value || 'Toque para adicionar'}</p>
+                  </div>
+                  <button onClick={() => handleDeleteBlock(block.id)} className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -71,7 +127,7 @@ export default function QuickAccess() {
             <div>
               <p className="text-sm font-medium">Documentos favoritos</p>
               <p className="text-xs text-muted-foreground mt-1">
-                Selecione os documentos que você quer acessar rapidamente na tela inicial.
+                Selecione os documentos da sua lista para acesso rápido.
               </p>
             </div>
           </div>
@@ -92,7 +148,7 @@ export default function QuickAccess() {
           <div className="space-y-2 mb-6">
             {documents.map((doc) => {
               const isSelected = selectedIds.includes(doc.id);
-              
+
               return (
                 <button
                   key={doc.id}
@@ -132,20 +188,41 @@ export default function QuickAccess() {
         )}
 
         {/* Save Button */}
-        {documents.length > 0 && (
-          <Button
-            onClick={handleSave}
-            className="w-full h-12 rounded-xl"
-            disabled={saving}
-          >
-            {saving ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              `Salvar (${selectedIds.length} selecionados)`
-            )}
-          </Button>
-        )}
+        <Button
+          onClick={handleSave}
+          className="w-full h-12 rounded-xl"
+          disabled={saving}
+        >
+          {saving ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            `Salvar Documentos (${selectedIds.length})`
+          )}
+        </Button>
       </div>
+
+      {/* Add Block Dialog */}
+      <Dialog open={showAddBlock} onOpenChange={setShowAddBlock}>
+        <DialogContent className="max-w-[calc(100vw-2rem)] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Novo Bloco de Acesso Rápido</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label>Nome do Bloco (ex: NIF, NISS)</Label>
+              <Input value={newBlockLabel} onChange={(e) => setNewBlockLabel(e.target.value)} placeholder="Ex: NIF" className="rounded-xl h-12" />
+            </div>
+            <div className="space-y-2">
+              <Label>Número (Opcional)</Label>
+              <Input value={newBlockValue} onChange={(e) => setNewBlockValue(e.target.value)} placeholder="Digite o número" className="rounded-xl h-12" />
+            </div>
+            <div className="flex gap-3">
+              <Button variant="outline" onClick={() => setShowAddBlock(false)} className="flex-1 h-12 rounded-xl">Cancelar</Button>
+              <Button onClick={handleAddBlock} disabled={!newBlockLabel.trim()} className="flex-1 h-12 rounded-xl">Criar</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </MobileLayout>
   );
 }

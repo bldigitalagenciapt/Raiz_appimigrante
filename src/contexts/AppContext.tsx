@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useProfile } from '@/hooks/useProfile';
 
 type Language = 'pt' | 'en';
 type UserProfile = 'recent' | 'resident' | 'legalizing' | null;
@@ -204,6 +205,8 @@ const translations: Record<Language, Record<string, string>> = {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const { profile } = useProfile();
+
   const [language, setLanguage] = useState<Language>('pt');
   const [userProfile, setUserProfile] = useState<UserProfile>(null);
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
@@ -216,6 +219,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     protocols: [],
     importantDates: [],
   });
+
+  useEffect(() => {
+    if (profile?.language && (profile.language === 'pt' || profile.language === 'en')) {
+      setLanguage(profile.language as Language);
+    }
+  }, [profile?.language]);
 
   const t = (key: string): string => {
     return translations[language][key] || key;
