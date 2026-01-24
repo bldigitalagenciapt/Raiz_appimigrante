@@ -79,7 +79,7 @@ export function useDocuments() {
         const bucket = 'voy_secure_docs';
 
         // STEP 1: Upload to Supabase Storage FIRST
-        const { error: uploadError } = await supabase.storage
+        const { error: uploadError, data: uploadData } = await supabase.storage
           .from(bucket)
           .upload(fileName, file, {
             contentType,
@@ -88,18 +88,28 @@ export function useDocuments() {
 
         if (uploadError) {
           // Detailed error logging as requested
-          console.error('Erro detalhado:', uploadError.message, uploadError.stack);
           console.error('[STORAGE UPLOAD FAILED]', {
             bucket,
             fileName,
             message: uploadError.message,
-            stack: uploadError.stack,
             fullError: uploadError
           });
           throw uploadError;
         }
 
-        // Get public URL only after successful upload
+        // DOUBLE CHECK: Verify file exists after upload before DB insert
+        const { data: listData, error: listError } = await supabase.storage
+          .from(bucket)
+          .list('', {
+            search: fileName
+          });
+
+        if (listError || !listData || listData.length === 0) {
+          console.error('[STORAGE VERIFICATION FAILED]', { fileName, listError });
+          throw new Error('Falha ao verificar o upload do arquivo no servidor.');
+        }
+
+        // Get public URL only after successful upload and verification
         const { data: { publicUrl } } = supabase.storage
           .from(bucket)
           .getPublicUrl(fileName);
@@ -144,14 +154,11 @@ export function useDocuments() {
         description: "Seu documento foi adicionado com sucesso.",
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       logger.error('Error adding document', { error });
-      console.error('Erro detalhado:', error.message, error.stack);
+      console.error('Erro detalhado:', error.message);
       console.error('[UPLOAD_FAILED] useDocuments mutation error:', {
         message: error.message,
-        stack: error.stack,
-        hint: error.hint,
-        details: error.details,
         fullError: error
       });
       toast({

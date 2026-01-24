@@ -490,18 +490,33 @@ export default function Aima() {
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Progresso Geral</p>
               <p className="text-lg font-bold">{completedCount} de {steps.length} concluídas</p>
             </div>
-            <div className="w-12 h-12 rounded-full border-4 border-primary/10 flex items-center justify-center relative">
-              <span className="text-xs font-bold text-primary">{Math.round(progress)}%</span>
-              <svg className="absolute inset-0 w-full h-full -rotate-90">
+            <div className="w-14 h-14 flex items-center justify-center relative">
+              <span className="text-[10px] font-bold text-primary z-10">{Math.round(progress)}%</span>
+              <svg
+                className="absolute inset-0 w-full h-full -rotate-90"
+                viewBox="0 0 48 48"
+              >
+                {/* Background Track */}
                 <circle
                   cx="24"
                   cy="24"
-                  r="20"
+                  r="18"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="4"
-                  className="text-primary"
-                  strokeDasharray={`${(progress / 100) * 125.6} 125.6`}
+                  className="text-primary/10"
+                />
+                {/* Progress Bar */}
+                <circle
+                  cx="24"
+                  cy="24"
+                  r="18"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  className="text-primary transition-all duration-700 ease-in-out"
+                  strokeDasharray={`${(progress / 100) * 113} 113`}
+                  strokeLinecap="round"
                 />
               </svg>
             </div>

@@ -94,6 +94,7 @@ ALTER TABLE public.notes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.aima_processes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.custom_categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.quick_access_documents ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_documents ENABLE ROW LEVEL SECURITY;
 
 -- ============================================
 -- 3. POLÍTICAS RLS - PROFILES
@@ -222,6 +223,26 @@ WITH CHECK (auth.uid() = user_id);
 DROP POLICY IF EXISTS "Users can delete their own quick access" ON public.quick_access_documents;
 CREATE POLICY "Users can delete their own quick access"
 ON public.quick_access_documents FOR DELETE
+USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can view their own documents" ON public.user_documents;
+CREATE POLICY "Users can view their own documents"
+ON public.user_documents FOR SELECT
+USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can insert their own documents" ON public.user_documents;
+CREATE POLICY "Users can insert their own documents"
+ON public.user_documents FOR INSERT
+WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can update their own documents" ON public.user_documents;
+CREATE POLICY "Users can update their own documents"
+ON public.user_documents FOR UPDATE
+USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can delete their own documents" ON public.user_documents;
+CREATE POLICY "Users can delete their own documents"
+ON public.user_documents FOR DELETE
 USING (auth.uid() = user_id);
 
 -- ============================================

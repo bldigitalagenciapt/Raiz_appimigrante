@@ -245,7 +245,10 @@ export default function Documents() {
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="p-2 rounded-lg hover:bg-muted transition-colors">
+                      <button
+                        className="p-2 rounded-lg hover:bg-muted transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <MoreVertical className="w-5 h-5 text-muted-foreground" />
                       </button>
                     </DropdownMenuTrigger>
@@ -263,7 +266,10 @@ export default function Documents() {
                       {doc.file_url && (
                         <DropdownMenuItem
                           className="gap-2"
-                          onClick={() => window.open(doc.file_url!, '_blank')}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(doc.file_url!, '_blank');
+                          }}
                         >
                           <Download className="w-4 h-4" />
                           Baixar documento
@@ -271,14 +277,20 @@ export default function Documents() {
                       )}
                       <DropdownMenuItem
                         className="gap-2"
-                        onClick={() => setEditingDoc({ id: doc.id, name: doc.name })}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingDoc({ id: doc.id, name: doc.name });
+                        }}
                       >
                         <Pencil className="w-4 h-4" />
                         Editar nome
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="gap-2 text-destructive focus:text-destructive"
-                        onClick={() => setDeleteId(doc.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteId(doc.id);
+                        }}
                       >
                         <Trash2 className="w-4 h-4" />
                         Excluir

@@ -5,13 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { 
-  ChevronLeft, 
-  Camera, 
-  User, 
-  Mail, 
-  Lock, 
-  Loader2, 
+import {
+  ChevronLeft,
+  Camera,
+  User,
+  Mail,
+  Lock,
+  Loader2,
   Check,
   Settings,
   FolderPlus,
@@ -31,13 +31,13 @@ export default function Profile() {
   const { user } = useAuth();
   const { profile, updateProfile, loading } = useProfile();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [showNameDialog, setShowNameDialog] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [tempName, setTempName] = useState('');
   const [saving, setSaving] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  
+
   // Password fields
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -52,19 +52,19 @@ export default function Profile() {
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}/avatar.${fileExt}`;
-      
+
       const { error: uploadError } = await supabase.storage
-        .from('documents')
+        .from('voy_secure_docs')
         .upload(fileName, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('documents')
+        .from('voy_secure_docs')
         .getPublicUrl(fileName);
 
-      await updateProfile({ avatar_url: publicUrl } as any);
-      
+      await updateProfile({ avatar_url: publicUrl });
+
       toast({
         title: "Foto atualizada!",
         description: "Sua foto de perfil foi alterada com sucesso.",
@@ -83,9 +83,9 @@ export default function Profile() {
 
   const handleSaveName = async () => {
     if (!tempName.trim()) return;
-    
+
     setSaving(true);
-    await updateProfile({ display_name: tempName } as any);
+    await updateProfile({ display_name: tempName });
     setSaving(false);
     setShowNameDialog(false);
   };
@@ -125,13 +125,14 @@ export default function Profile() {
         title: "Senha alterada!",
         description: "Sua senha foi atualizada com sucesso.",
       });
-      
+
       setShowPasswordDialog(false);
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (error: any) {
-      logger.error('Error changing password');
+    } catch (error) {
+      const authError = error as Error;
+      logger.error('Error changing password', { error: authError.message });
       toast({
         variant: "destructive",
         title: "Erro ao alterar senha",
@@ -152,8 +153,8 @@ export default function Profile() {
     );
   }
 
-  const displayName = (profile as any)?.display_name || user?.email?.split('@')[0] || 'Usuário';
-  const avatarUrl = (profile as any)?.avatar_url;
+  const displayName = profile?.display_name || user?.email?.split('@')[0] || 'Usuário';
+  const avatarUrl = profile?.avatar_url;
 
   return (
     <MobileLayout showNav={false}>
@@ -191,7 +192,7 @@ export default function Profile() {
           </div>
           <h2 className="text-xl font-bold">{displayName}</h2>
           <p className="text-muted-foreground">{user?.email}</p>
-          
+
           <input
             ref={fileInputRef}
             type="file"
@@ -250,7 +251,7 @@ export default function Profile() {
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
             Configurações rápidas
           </h3>
-          
+
           <button
             onClick={() => navigate('/settings/categories')}
             className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card border border-border hover:border-primary/30 transition-all"
@@ -361,20 +362,20 @@ export default function Profile() {
                 placeholder="Confirme a nova senha"
                 className="h-12 rounded-xl"
               />
-              
+
               {/* Password strength indicator */}
               {newPassword.length > 0 && (
                 <div className="mt-2">
                   <div className="flex gap-1 mb-1">
                     <div className={cn(
                       "h-1 flex-1 rounded",
-                      passwordStrength === 'weak' ? 'bg-destructive' : 
-                      passwordStrength === 'medium' ? 'bg-warning' : 'bg-success'
+                      passwordStrength === 'weak' ? 'bg-destructive' :
+                        passwordStrength === 'medium' ? 'bg-warning' : 'bg-success'
                     )} />
                     <div className={cn(
                       "h-1 flex-1 rounded",
-                      passwordStrength === 'medium' ? 'bg-warning' : 
-                      passwordStrength === 'strong' ? 'bg-success' : 'bg-muted'
+                      passwordStrength === 'medium' ? 'bg-warning' :
+                        passwordStrength === 'strong' ? 'bg-success' : 'bg-muted'
                     )} />
                     <div className={cn(
                       "h-1 flex-1 rounded",
@@ -383,11 +384,11 @@ export default function Profile() {
                   </div>
                   <p className={cn(
                     "text-xs",
-                    passwordStrength === 'weak' ? 'text-destructive' : 
-                    passwordStrength === 'medium' ? 'text-warning' : 'text-success'
+                    passwordStrength === 'weak' ? 'text-destructive' :
+                      passwordStrength === 'medium' ? 'text-warning' : 'text-success'
                   )}>
-                    Força: {passwordStrength === 'weak' ? 'Fraca' : 
-                           passwordStrength === 'medium' ? 'Média' : 'Forte'}
+                    Força: {passwordStrength === 'weak' ? 'Fraca' :
+                      passwordStrength === 'medium' ? 'Média' : 'Forte'}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
                     Mínimo 8 caracteres, 1 letra e 1 número

@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from '@/hooks/use-toast';
 import { logger } from '@/lib/logger';
+import { encryptData, decryptData } from '@/lib/crypto';
 
 export interface Profile {
   id: string;
@@ -37,11 +38,18 @@ export function useProfile() {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (error) {
-        logger.error('Error fetching profile', { error });
-        throw error;
+      if (data) {
+        const decryptedDoc = { ...data };
+        const sensitiveFields = ['nif', 'niss', 'sns', 'passport'] as const;
+
+        for (const field of sensitiveFields) {
+          if (decryptedDoc[field]) {
+            decryptedDoc[field] = await decryptData(decryptedDoc[field] as string, user.id);
+          }
+        }
+        return decryptedDoc as Profile;
       }
-      return data as Profile;
+      return null;
     },
     enabled: !!user,
   });
@@ -50,11 +58,23 @@ export function useProfile() {
     mutationFn: async (updates: Partial<Profile>) => {
       if (!user) throw new Error('Not authenticated');
 
+      const encryptedUpdates = { ...updates };
+      const sensitiveFields = ['nif', 'niss', 'sns', 'passport'] as const;
+
+      for (const field of sensitiveFields) {
+        if (encryptedUpdates[field]) {
+          encryptedUpdates[field] = await encryptData(encryptedUpdates[field] as string, user.id);
+        }
+      }
+
       const { error } = await supabase
         .schema('public')
         .from('profiles')
-        .update(updates)
-        .eq('user_id', user.id);
+        .upsert({
+          ...encryptedUpdates,
+          user_id: user.id,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id' });
 
       if (error) throw error;
       return updates;

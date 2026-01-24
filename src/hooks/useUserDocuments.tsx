@@ -39,7 +39,7 @@ export function useUserDocuments() {
                 });
                 throw error;
             }
-            return (data as any[]) as UserDocument[];
+            return data as UserDocument[];
         },
         enabled: !!user,
     });
@@ -72,7 +72,7 @@ export function useUserDocuments() {
                 });
                 throw error;
             }
-            return data;
+            return data as UserDocument;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['user_documents', user?.id] });
