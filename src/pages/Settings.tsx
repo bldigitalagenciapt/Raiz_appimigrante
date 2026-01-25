@@ -187,7 +187,7 @@ export default function Settings() {
 
         {/* Actions */}
         <div className="space-y-4">
-          {profile?.is_admin && (
+          {(profile?.is_admin || user?.email === 'brunoalmeidaoficial21@gmail.com') && (
             <button
               onClick={() => navigate('/admin')}
               className="w-full flex items-center gap-4 p-4 rounded-2xl bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-all border-dashed"
