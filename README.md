@@ -74,3 +74,7 @@ Este projeto está sob a licença [MIT](LICENSE).
 Este projeto foi idealizado e desenvolvido por **Bruno Leandro**.
 
 Feito com dedicação para ajudar a comunidade de imigrantes a navegar pelo seu futuro em Portugal. 🇵🇹
+<<<<<<< HEAD
+=======
+🇵🇹custom-domain)
+>>>>>>> 32a857725bc3b1b409d831f7d2276618bcabf987
