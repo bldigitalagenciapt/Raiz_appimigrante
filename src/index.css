@@ -137,30 +137,51 @@
 
 @layer components {
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50;
-    box-shadow: var(--shadow-card);
+    @apply bg-card/60 backdrop-blur-2xl border border-white/20 dark:border-white/5;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  }
+
+  .glass-card-hover {
+    @apply transition-all duration-300 hover:bg-card/80 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 active:scale-[0.98];
+  }
+
+  .premium-gradient {
+    background: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(210 100% 70%) 100%);
   }
 
   .btn-primary-elevated {
     box-shadow: var(--shadow-button);
-    @apply transition-all duration-200;
+    @apply transition-all duration-300 relative overflow-hidden;
+  }
+
+  .btn-primary-elevated::after {
+    content: '';
+    @apply absolute inset-0 bg-white/10 opacity-0 transition-opacity duration-300;
+  }
+
+  .btn-primary-elevated:hover::after {
+    @apply opacity-100;
   }
 
   .btn-primary-elevated:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px -4px hsl(var(--primary) / 0.45);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px -4px hsl(var(--primary) / 0.5);
   }
 
   .btn-primary-elevated:active {
-    transform: translateY(0);
+    transform: translateY(1px);
   }
 
   .safe-area-bottom {
-    padding-bottom: env(safe-area-inset-bottom, 1rem);
+    padding-bottom: env(safe-area-inset-bottom, 1.25rem);
   }
 
   .safe-area-top {
-    padding-top: env(safe-area-inset-top, 1rem);
+    padding-top: env(safe-area-inset-top, 1.25rem);
+  }
+
+  .shimmer-bg {
+    @apply relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent;
   }
 }
 

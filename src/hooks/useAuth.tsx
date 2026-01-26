@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    return { error: error as Error | null };
+    return { error: error };
   };
 
   const signIn = async (email: string, password: string) => {
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
     });
 
-    return { error: error as Error | null };
+    return { error: error };
   };
 
   const signOut = async () => {

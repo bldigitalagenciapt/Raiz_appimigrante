@@ -48,7 +48,9 @@ export const processTypes = [
   { id: 'visa', title: 'Vistos', icon: Plane, description: 'Vistos de Longa Duração (D1-D9)' },
 ];
 
-const visaIcons: Record<string, any> = {
+import { LucideIcon } from 'lucide-react';
+
+const visaIcons: Record<string, LucideIcon> = {
   'study': GraduationCap,
   'work': Briefcase,
   'job-seeking': Search,
@@ -492,27 +494,27 @@ export default function Aima() {
     <MobileLayout>
       <div className="px-5 py-6 safe-area-top">
         {/* Premium Header */}
-        <div className="relative mb-8 p-6 rounded-3xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <Globe className="w-20 h-20 text-primary" />
+        <div className="relative mb-8 p-6 glass-card border-primary/20 overflow-hidden animate-glow">
+          <div className="absolute top-0 right-0 p-4 opacity-5">
+            <Globe className="w-32 h-32 text-primary" />
           </div>
           <div className="relative z-10">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-primary uppercase tracking-widest">Processo Ativo</span>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-full">Processo Ativo</span>
               <button
                 onClick={handleClearProcess}
                 disabled={saving}
-                className="text-xs font-bold text-destructive px-3 py-1 rounded-full bg-destructive/10 hover:bg-destructive/20 transition-colors"
+                className="text-[10px] font-black text-destructive px-3 py-1 rounded-full bg-destructive/10 hover:bg-destructive/20 transition-all border border-destructive/20"
               >
                 Encerrar
               </button>
             </div>
-            <h1 className="text-2xl font-bold text-foreground">
+            <h1 className="text-3xl font-black text-foreground tracking-tighter">
               {isSpecificVisa
                 ? visaTypes.find(v => v.id === process.process_type)?.name
                 : processTypes.find((p) => p.id === process.process_type)?.title}
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm font-medium text-muted-foreground mt-2 opacity-80">
               Acompanhe cada etapa do seu caminho em Portugal
             </p>
           </div>

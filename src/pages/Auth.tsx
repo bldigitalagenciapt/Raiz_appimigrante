@@ -150,21 +150,29 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
+      {/* Premium background elements */}
+      <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[120px] rounded-full animate-pulse" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 blur-[100px] rounded-full animate-float" />
+
       {/* Header */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-12">
-        <div className="w-full max-w-sm">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 relative z-10">
+        <div className="w-full max-w-sm glass-card p-8 rounded-[2.5rem] shadow-2xl shadow-primary/5">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="w-24 h-24 flex items-center justify-center mx-auto mb-4">
-              <img src="/logo.png" alt="VOY Logo" className="w-full h-full object-contain" />
+            <div className="w-24 h-24 flex items-center justify-center mx-auto mb-4 animate-float">
+              <img src="/logo.png" alt="VOY Logo" className="w-full h-full object-contain drop-shadow-2xl" />
             </div>
-            <p className="text-lg font-medium text-primary mt-1">
+            <p className="text-xl font-black text-primary tracking-tighter uppercase mb-1">
+              VOY App
+            </p>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-6">
               A porta de entrada para o seu futuro
             </p>
-            <p className="text-muted-foreground mt-2">
-              {isForgotPassword ? 'Recuperar sua senha' : isLogin ? 'Bem-vindo de volta!' : 'Crie sua conta'}
-            </p>
+            <div className="h-px w-12 bg-primary/20 mx-auto mb-6" />
+            <h2 className="text-2xl font-black tracking-tight text-foreground">
+              {isForgotPassword ? 'Recuperar senha' : isLogin ? 'Bem-vindo!' : 'Criar conta'}
+            </h2>
           </div>
 
           {/* Form */}

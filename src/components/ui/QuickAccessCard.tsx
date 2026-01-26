@@ -33,14 +33,13 @@ export function QuickAccessCard({
       <button
         onClick={onClick}
         className={cn(
-          'w-full flex flex-col items-center justify-center p-4 rounded-2xl',
-          'bg-card border border-border shadow-sm',
-          'hover:shadow-md hover:border-primary/30 active:scale-[0.98]',
-          'transition-all duration-200',
+          'w-full flex flex-col items-center justify-center p-4 rounded-3xl',
+          'glass-card glass-card-hover',
+          'hover:shadow-primary/10',
           className
         )}
       >
-        <span className="text-xs font-medium text-muted-foreground mb-1">
+        <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground/60 mb-1">
           {label}
         </span>
         {value ? (

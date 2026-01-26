@@ -53,9 +53,7 @@ export function useAimaProcess() {
         logger.error('Error fetching AIMA process', { error });
         console.error('Error fetching AIMA process:', {
           message: error.message,
-          hint: (error as any).hint,
-          details: (error as any).details,
-          fullError: error
+          error
         });
         throw error;
       }
@@ -137,18 +135,17 @@ export function useAimaProcess() {
       }
       return updates;
     },
-    onSuccess: (data: any) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['aima_process', user?.id] });
       toast({
         title: "Informações salvas!",
         description: "Seu processo foi atualizado com sucesso.",
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       logger.error('Error updating AIMA process', { error });
       console.error('useAimaProcess mutation error:', {
         message: error.message,
-        hint: error.hint,
         fullError: error
       });
       toast({
@@ -161,7 +158,7 @@ export function useAimaProcess() {
 
   const selectProcessType = async (type: string) => {
     return mutation.mutateAsync({
-      process_type: type as any,
+      process_type: type,
       completed_steps: [],
       important_dates: [],
       protocols: [],

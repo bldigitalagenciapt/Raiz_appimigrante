@@ -6,7 +6,7 @@ import { MobileLayout } from '@/components/layout/MobileLayout';
 import { AlertBanner } from '@/components/ui/AlertBanner';
 import { QuickAccessCard } from '@/components/ui/QuickAccessCard';
 import { ActionCard } from '@/components/ui/ActionCard';
-import { FileText, Globe, MessageCircle, Settings, StickyNote, Loader2, Star, Wallet, Calendar as CalendarIcon } from 'lucide-react';
+import { FileText, Globe, Settings, StickyNote, Loader2, Star, Wallet, Calendar as CalendarIcon } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,19 +14,13 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotes } from '@/hooks/useNotes';
 import { useDocuments } from '@/hooks/useDocuments';
-import { SkeletonList, SkeletonCard } from '@/components/ui/skeleton-card';
+import { SkeletonCard } from '@/components/ui/skeleton-card';
 import { useUserDocuments } from '@/hooks/useUserDocuments';
 import { toast } from 'sonner';
 import { useQuickAccess } from '@/hooks/useQuickAccess';
 import { visaTypes } from '@/data/visaTypes';
-import { processTypes } from '@/pages/Aima'; // Imported from Aima page
+import { processTypes } from '@/pages/Aima';
 
-// The local processTypes definition is now redundant if imported from Aima.
-// Keeping it for now as the instruction didn't explicitly remove it,
-// but the new logic uses the imported one.
-// The instruction implies this definition should be in Aima.tsx and exported from there.
-// For Home.tsx, we will use the imported 'processTypes'.
-// The original 'processTypesLocal' is removed as it's now redundant.
 
 import { NewsSlider } from '@/components/home/NewsSlider';
 import { CalendarPreview } from '@/components/home/CalendarPreview';
@@ -158,9 +152,7 @@ export default function Home() {
     return isManualDone || hasUpload;
   }).length;
 
-  const docProgress = totalChecklistItems > 0
-    ? Math.round((completedChecklistItems / totalChecklistItems) * 100)
-    : 0;
+  // Process completion calculation moved to widgets
 
   const starredNotes = notes.filter(n => n.is_important);
 
@@ -182,7 +174,9 @@ export default function Home() {
               <SkeletonCard count={2} className="w-[140px] h-[100px]" />
             </div>
           </div>
-          <SkeletonList count={4} />
+          <div className="space-y-4">
+            <SkeletonCard count={4} />
+          </div>
         </div>
       </MobileLayout>
     );
@@ -197,10 +191,10 @@ export default function Home() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">
-              Olá, {profile?.display_name?.split(' ')[0] || 'Imigrante'}! 👋
+            <h1 className="text-2xl font-black text-foreground tracking-tight">
+              Olá, <span className="text-primary italic">{profile?.display_name?.split(' ')[0] || 'Imigrante'}</span>! 👋
             </h1>
-            <p className="text-muted-foreground">Bem-vindo de volta</p>
+            <p className="text-sm font-medium text-muted-foreground opacity-80">Bem-vindo de volta ao seu futuro</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -257,42 +251,42 @@ export default function Home() {
         <div className="grid grid-cols-2 gap-4 mb-8">
           {/* Profile Progress */}
           <div
-            className="bg-card border rounded-3xl p-4 shadow-sm space-y-3 active:scale-95 transition-transform"
+            className="glass-card glass-card-hover p-4 space-y-3"
             onClick={() => navigate('/profile')}
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-muted-foreground">Perfil</span>
-              <span className="text-xs font-bold text-primary">{completionPercentage}%</span>
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Perfil</span>
+              <span className="text-xs font-black text-primary">{completionPercentage}%</span>
             </div>
-            <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+            <div className="h-2 w-full bg-primary/10 rounded-full overflow-hidden">
               <div
-                className="h-full bg-primary transition-all duration-500"
+                className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all duration-1000 ease-out"
                 style={{ width: `${completionPercentage}%` }}
               />
             </div>
-            <p className="text-xs text-muted-foreground">
-              {completedFields} de {profileFields.length} documentos
+            <p className="text-[10px] font-medium text-muted-foreground/70 uppercase">
+              {completedFields} / {profileFields.length} campos
             </p>
           </div>
 
           {/* AIMA Status Summary - Restored to original size with specific name */}
           <div
-            className="bg-card border rounded-3xl p-4 shadow-sm space-y-3 cursor-pointer hover:bg-muted/50 active:scale-95 transition-transform"
+            className="glass-card glass-card-hover p-4 space-y-3"
             onClick={() => navigate('/aima')}
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-muted-foreground">AIMA</span>
-              <span className="text-xs font-bold text-primary">
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">AIMA</span>
+              <span className="text-xs font-black text-primary">
                 {aimaProcess?.process_type ? `${Math.min(Math.round(aimaProcess.step / 5 * 100), 100)}%` : '0%'}
               </span>
             </div>
-            <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+            <div className="h-2 w-full bg-primary/10 rounded-full overflow-hidden">
               <div
-                className="h-full bg-primary transition-all duration-500"
+                className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all duration-1000 ease-out"
                 style={{ width: `${aimaProcess?.process_type ? Math.min((aimaProcess.step / 5 * 100), 100) : 0}%` }}
               />
             </div>
-            <p className="text-xs text-muted-foreground truncate font-semibold">
+            <p className="text-[10px] font-bold text-primary truncate uppercase">
               {aimaProcess?.process_type ? (
                 visaTypes.find(v => v.id === aimaProcess.process_type)?.name ||
                 processTypes.find(p => p.id === aimaProcess.process_type)?.title ||

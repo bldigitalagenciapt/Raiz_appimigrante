@@ -151,13 +151,13 @@ export default function Settings() {
         </div>
 
         {/* User Info */}
-        <div className="mb-6 p-4 bg-card rounded-2xl border border-border">
-          <p className="text-sm text-muted-foreground">Conectado como</p>
-          <p className="font-semibold text-foreground">{user?.email}</p>
+        <div className="mb-8 glass-card p-6 shadow-xl shadow-primary/5 rounded-[2rem] border-primary/10">
+          <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">CONECTADO COMO</p>
+          <p className="text-xl font-black text-foreground tracking-tight">{user?.email}</p>
         </div>
 
         {/* Settings List */}
-        <div className="space-y-2 mb-8">
+        <div className="space-y-3 mb-10 text-pretty">
           {settingsItems.map((item, index) => {
             const Icon = item.icon;
 
@@ -166,8 +166,8 @@ export default function Settings() {
                 key={item.id}
                 onClick={item.onClick}
                 className={cn(
-                  'w-full flex items-center gap-4 p-4 rounded-2xl bg-card border border-border',
-                  'hover:border-primary/30 transition-all animate-slide-up'
+                  'w-full flex items-center gap-4 p-5 rounded-[2rem] glass-card glass-card-hover',
+                  'animate-slide-up border-primary/5'
                 )}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
@@ -211,9 +211,9 @@ export default function Settings() {
               window.location.href = '/auth';
             }}
             disabled={loggingOut}
-            className="w-full flex items-center gap-4 p-4 rounded-2xl bg-muted/50 border border-border hover:bg-muted transition-all"
+            className="w-full flex items-center gap-4 p-5 rounded-[2rem] glass-card glass-card-hover border-primary/5"
           >
-            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-muted/50 flex items-center justify-center">
               {loggingOut ? (
                 <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
               ) : (
@@ -225,9 +225,9 @@ export default function Settings() {
 
           <button
             onClick={() => setShowDeleteDialog(true)}
-            className="w-full flex items-center gap-4 p-4 rounded-2xl bg-destructive/10 border border-destructive/20 hover:bg-destructive/20 transition-all"
+            className="w-full flex items-center gap-4 p-5 rounded-[2rem] bg-destructive/5 border border-destructive/20 hover:bg-destructive/10 transition-all"
           >
-            <div className="w-10 h-10 rounded-xl bg-destructive/20 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-destructive/10 flex items-center justify-center">
               <Trash2 className="w-5 h-5 text-destructive" />
             </div>
             <span className="font-medium text-destructive">Excluir minha conta e dados</span>
@@ -235,11 +235,15 @@ export default function Settings() {
         </div>
 
         {/* Version */}
-        <div className="mt-12 text-center">
-          <p className="text-sm text-muted-foreground">VOY v1.0.0</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Feito com 💚 para imigrantes em Portugal
-          </p>
+        <div className="mt-16 text-center pb-8 animate-fade-in">
+          <p className="text-xs font-black text-primary/40 uppercase tracking-[0.3em]">VOY VERSION 1.0.0</p>
+          <div className="flex items-center justify-center gap-2 mt-2">
+            <span className="w-8 h-px bg-primary/10" />
+            <p className="text-[10px] font-medium text-muted-foreground italic">
+              Feito com excelência para você
+            </p>
+            <span className="w-8 h-px bg-primary/10" />
+          </div>
         </div>
       </div>
 
