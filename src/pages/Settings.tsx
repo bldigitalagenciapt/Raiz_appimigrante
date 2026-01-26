@@ -84,7 +84,7 @@ export default function Settings() {
       id: 'profile',
       icon: User,
       label: 'Meu Perfil',
-      onClick: () => navigate('/profile'),
+      onClick: () => navigate('/profile', { replace: true }),
     },
     {
       id: 'categories',

@@ -133,7 +133,7 @@ export default function Admin() {
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-3">
                         <button
-                            onClick={() => navigate('/settings')}
+                            onClick={() => navigate(-1)}
                             className="w-10 h-10 rounded-full bg-muted flex items-center justify-center"
                         >
                             <ChevronLeft className="w-5 h-5" />

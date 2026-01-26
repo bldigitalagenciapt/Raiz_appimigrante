@@ -281,7 +281,7 @@ export default function Profile() {
           </button>
 
           <button
-            onClick={() => navigate('/settings')}
+            onClick={() => navigate('/settings', { replace: true })}
             className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card border border-border hover:border-primary/30 transition-all"
           >
             <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
