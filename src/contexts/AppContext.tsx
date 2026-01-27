@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useProfile } from '@/hooks/useProfile';
+import { useAuth } from '@/hooks/useAuth';
 
 type Language = 'pt' | 'en';
 type UserProfile = 'recent' | 'resident' | 'legalizing' | null;
@@ -218,6 +219,7 @@ const translations: Record<Language, Record<string, string>> = {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const { profile, loading } = useProfile();
 
   const [language, setLanguage] = useState<Language>('pt');
@@ -290,7 +292,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         aimaProcess,
         setAimaProcess,
         t,
-        isProfileLoading: loading,
+        isProfileLoading: loading || (!!user && !profile && !userProfile),
       }}
     >
       {children}
