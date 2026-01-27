@@ -17,7 +17,7 @@ import {
 
 export default function SalaryCalculator() {
     const navigate = useNavigate();
-    const [grossSalary, setGrossSalary] = useState<number>(1200);
+    const [grossSalary, setGrossSalary] = useState<string>('1200');
     const [ssRate, setSsRate] = useState<number>(11); // Standard 11%
     const [netSalary, setNetSalary] = useState<number>(0);
     const [irsTax, setIrsTax] = useState<number>(0);
@@ -25,19 +25,20 @@ export default function SalaryCalculator() {
 
     // Simple Portuguese IRS Brackets Approximation (2026 simplified)
     const calculateTaxes = () => {
-        const ss = grossSalary * (ssRate / 100);
+        const salary = Number(grossSalary);
+        const ss = salary * (ssRate / 100);
 
         // IRS Estimation (Simplified brackets for Portugal)
         let irsRate = 0;
-        if (grossSalary <= 850) irsRate = 0;
-        else if (grossSalary <= 1200) irsRate = 8;
-        else if (grossSalary <= 1800) irsRate = 15;
-        else if (grossSalary <= 2500) irsRate = 22;
-        else if (grossSalary <= 4000) irsRate = 28;
+        if (salary <= 850) irsRate = 0;
+        else if (salary <= 1200) irsRate = 8;
+        else if (salary <= 1800) irsRate = 15;
+        else if (salary <= 2500) irsRate = 22;
+        else if (salary <= 4000) irsRate = 28;
         else irsRate = 35;
 
-        const irs = grossSalary * (irsRate / 100);
-        const net = grossSalary - ss - irs;
+        const irs = salary * (irsRate / 100);
+        const net = salary - ss - irs;
 
         setSsTax(ss);
         setIrsTax(irs);
@@ -73,7 +74,7 @@ export default function SalaryCalculator() {
                                         id="gross"
                                         type="number"
                                         value={grossSalary}
-                                        onChange={(e) => setGrossSalary(Number(e.target.value))}
+                                        onChange={(e) => setGrossSalary(e.target.value)}
                                         className="h-16 text-3xl font-black pl-12 rounded-2xl bg-muted/30 border-none focus-visible:ring-primary/20"
                                     />
                                     <Euro className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-primary opacity-50" />
