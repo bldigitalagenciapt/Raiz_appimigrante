@@ -143,7 +143,7 @@
 
   @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
     .glass-card {
-      @apply bg-card/60 backdrop-blur-xl;
+      @apply bg-card/75 backdrop-blur-md;
       box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
     }
   }
@@ -154,7 +154,7 @@
 
   @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
     .glass-card-hover {
-      @apply hover:bg-card/80 hover:shadow-xl hover:shadow-primary/5;
+      @apply hover:bg-card/90 hover:shadow-xl hover:shadow-primary/5;
     }
   }
 

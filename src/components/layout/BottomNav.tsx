@@ -4,11 +4,11 @@ import { useApp } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { path: '/home', icon: Home, labelKey: 'nav.home' },
-  { path: '/documents', icon: FileText, labelKey: 'nav.documents' },
-  { path: '/community', icon: Heart, labelKey: 'nav.community' },
-  { path: '/aima', icon: Globe, labelKey: 'nav.aima' },
-  { path: '/meu-bolso', icon: Wallet, labelKey: 'nav.meuBolso' },
+  { path: '/home', icon: Home, labelKey: 'nav.home', label: 'Início' },
+  { path: '/documents', icon: FileText, labelKey: 'nav.documents', label: 'Docs' },
+  { path: '/community', icon: Heart, labelKey: 'nav.community', label: 'Mural' },
+  { path: '/aima', icon: Globe, labelKey: 'nav.aima', label: 'AIMA' },
+  { path: '/meu-bolso', icon: Wallet, labelKey: 'nav.meuBolso', label: 'Bolso' },
 ];
 
 export function BottomNav() {
@@ -17,20 +17,24 @@ export function BottomNav() {
   const { t } = useApp();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border safe-area-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border safe-area-bottom pb-2">
       <div className="flex items-center justify-around px-2 py-2">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
+
+          // Fallback verify: if translation seems wrong (too long), use default
+          const translated = t(item.labelKey);
+          const label = translated.length > 15 ? item.label : translated;
 
           return (
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
               className={cn(
-                'flex flex-col items-center justify-center min-w-[64px] py-2 px-3 rounded-xl transition-all duration-200',
+                'flex flex-col items-center justify-center min-w-[64px] py-1 px-3 rounded-xl transition-all duration-200',
                 isActive
-                  ? 'bg-primary/10 text-primary'
+                  ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
               )}
             >
@@ -42,10 +46,10 @@ export function BottomNav() {
                 strokeWidth={isActive ? 2.5 : 2}
               />
               <span className={cn(
-                'text-2xs font-medium',
-                isActive && 'font-semibold'
+                'text-[10px] font-medium leading-none',
+                isActive && 'font-black'
               )}>
-                {t(item.labelKey)}
+                {label}
               </span>
             </button>
           );

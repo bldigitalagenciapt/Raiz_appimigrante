@@ -54,6 +54,7 @@ export function NewsSlider() {
                         <img
                             src={noticia.imagem_url || 'https://images.unsplash.com/photo-1555881400-7db40f665c8a?q=80&w=2070&auto=format&fit=crop'}
                             alt={noticia.titulo}
+                            loading="lazy"
                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             onError={(e) => {
                                 (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1585829365234-781fbc37c864?q=80&w=2070&auto=format&fit=crop';
@@ -61,7 +62,7 @@ export function NewsSlider() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 flex flex-col justify-end">
                             <div className="space-y-2">
-                                <span className="px-2 py-0.5 bg-blue-500/30 backdrop-blur-md border border-blue-400/30 rounded-full text-[10px] font-bold text-blue-100 uppercase tracking-wider">
+                                <span className="px-2 py-0.5 bg-blue-500/30 border border-blue-400/30 rounded-full text-[10px] font-bold text-blue-100 uppercase tracking-wider">
                                     AIMA Oficial
                                 </span>
                                 <h3 className="text-white font-extrabold text-xl leading-tight line-clamp-2 flex items-center gap-2 group-hover:text-primary/90 transition-colors">
