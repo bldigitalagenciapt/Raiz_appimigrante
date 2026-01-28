@@ -192,15 +192,25 @@ export default function Home() {
         {/* Premium Header */}
         <div className="flex items-center justify-between mb-8 mt-2">
           <div>
-            <h1 className="text-3xl font-black tracking-tight text-foreground">
-              VOY<span className="text-primary">.</span>
-            </h1>
-            <p className="text-sm font-medium text-muted-foreground">Seu futuro começa aqui</p>
+            <img src="/logo.png" alt="VOY" className="h-10 w-auto object-contain" />
+            <p className="text-base font-medium text-muted-foreground mt-1">Seu futuro começa aqui</p>
           </div>
           <div className="flex items-center gap-3">
             <button
+              onClick={() => navigate('/agenda')}
+              className="w-11 h-11 rounded-full bg-white/80 border border-white/20 shadow-sm flex items-center justify-center hover:bg-white transition-all dark:bg-white/10 dark:border-white/5"
+            >
+              <CalendarIcon className="w-5 h-5 text-muted-foreground" />
+            </button>
+            <button
+              onClick={() => setShowEmergency(true)}
+              className="w-11 h-11 rounded-full bg-red-500/10 border border-red-500/20 shadow-sm flex items-center justify-center hover:bg-red-500/20 transition-all animate-pulse"
+            >
+              <ShieldAlert className="w-5 h-5 text-red-500" />
+            </button>
+            <button
               onClick={() => navigate('/settings')}
-              className="w-10 h-10 rounded-full bg-white/80 border border-white/20 shadow-sm flex items-center justify-center hover:bg-white transition-all dark:bg-white/10 dark:border-white/5"
+              className="w-11 h-11 rounded-full bg-white/80 border border-white/20 shadow-sm flex items-center justify-center hover:bg-white transition-all dark:bg-white/10 dark:border-white/5"
             >
               <Settings className="w-5 h-5 text-muted-foreground" />
             </button>
@@ -212,7 +222,7 @@ export default function Home() {
                 {profile?.avatar_url ? (
                   <img src={profile.avatar_url} alt="Perfil" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-muted text-primary font-bold">
+                  <div className="w-full h-full flex items-center justify-center bg-muted text-primary font-bold text-lg">
                     {user?.email?.charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -223,15 +233,73 @@ export default function Home() {
 
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-foreground mb-1">
+          <h2 className="text-3xl font-bold text-foreground mb-1">
             Olá, <span className="premium-gradient-text">{profile?.display_name?.split(' ')[0] || 'Imigrante'}</span>
           </h2>
-          <p className="text-muted-foreground text-sm">Pronto para avançar hoje?</p>
+          <p className="text-muted-foreground text-base">Pronto para avançar hoje?</p>
         </div>
 
         <NewsSlider />
 
-        {/* Alerts moved below slider for better visual flow */}
+        {/* Quick Access Numbers & Documents - MOVED UP */}
+        <div className="mt-8 mb-8">
+          <div className="flex items-center justify-between mb-4 px-1">
+            <h2 className="text-lg font-extrabold text-foreground">Seus Documentos</h2>
+            <button onClick={() => navigate('/documents')} className="text-sm font-semibold text-primary hover:underline">Ver todos</button>
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-6 -mx-5 px-5 scrollbar-hide">
+            {/* Standard Blocks with better styling */}
+            <QuickAccessCard
+              label="NIF"
+              value={profile?.nif || ''}
+              placeholder="Adicionar"
+              onClick={() => openNumberDialog('nif')}
+              isSecure={true}
+              className="bg-white dark:bg-card min-w-[140px]"
+            />
+            <QuickAccessCard
+              label="NISS"
+              value={profile?.niss || ''}
+              placeholder="Adicionar"
+              onClick={() => openNumberDialog('niss')}
+              isSecure={true}
+              className="min-w-[140px]"
+            />
+            <QuickAccessCard
+              label="SNS"
+              value={profile?.sns || ''}
+              placeholder="Adicionar"
+              onClick={() => openNumberDialog('sns')}
+              isSecure={true}
+              className="min-w-[140px]"
+            />
+            <QuickAccessCard
+              label="Passaporte"
+              value={profile?.passport || ''}
+              placeholder="Adicionar"
+              onClick={() => openNumberDialog('passport')}
+              isSecure={true}
+              className="min-w-[140px]"
+            />
+
+            {/* Custom Blocks Added by User */}
+            {profile?.custom_quick_access?.map((block) => (
+              <QuickAccessCard
+                key={block.id}
+                label={block.label}
+                value={block.value || ''}
+                placeholder="Adicionar"
+                onClick={() => {
+                  setTempNumber(block.value || '');
+                  setShowNumberDialog(block.label);
+                }}
+                isSecure={true}
+                className="min-w-[140px]"
+              />
+            ))}
+
+          </div>
+        </div>
         <div className="mt-6">
           {alerts.length > 0 && (
             <div className="space-y-3 mb-6 animate-slide-up">
@@ -249,27 +317,27 @@ export default function Home() {
         </div>
 
         {/* Dashboard Widgets */}
-        <div className="grid grid-cols-2 gap-4 mb-8 mt-6">
+        <div className="grid grid-cols-2 gap-5 mb-10 mt-6">
           {/* Profile Progress Widget */}
           <div
-            className="group relative overflow-hidden rounded-3xl bg-white border border-white/20 shadow-soft p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer dark:bg-white/5 dark:border-white/10"
+            className="group relative overflow-hidden rounded-[2rem] bg-white border border-white/20 shadow-soft p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer dark:bg-card dark:border-white/5"
             onClick={() => navigate('/profile')}
           >
             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-              <div className="w-16 h-16 rounded-full bg-primary blur-2xl" />
+              <div className="w-20 h-20 rounded-full bg-primary blur-3xl" />
             </div>
 
-            <div className="relative z-10 flex flex-col h-full justify-between gap-4">
+            <div className="relative z-10 flex flex-col h-full justify-between gap-6">
               <div className="flex items-start justify-between">
-                <div className="p-2.5 rounded-2xl bg-blue-50 text-primary dark:bg-blue-900/20">
-                  <UserIcon className="w-5 h-5" />
+                <div className="p-3 rounded-2xl bg-blue-50 text-primary dark:bg-blue-500/10">
+                  <UserIcon className="w-6 h-6" />
                 </div>
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider bg-muted/50 px-2 py-1 rounded-full">{completionPercentage}%</span>
+                <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider bg-muted/50 px-2.5 py-1 rounded-full">{completionPercentage}%</span>
               </div>
 
               <div>
-                <span className="text-sm font-semibold text-foreground block mb-1">Meu Perfil</span>
-                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                <span className="text-base font-bold text-foreground block mb-2">Meu Perfil</span>
+                <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-primary to-blue-400 transition-all duration-1000 ease-out shadow-[0_0_10px_hsl(var(--primary)/0.5)]"
                     style={{ width: `${completionPercentage}%` }}
@@ -281,30 +349,30 @@ export default function Home() {
 
           {/* AIMA Status Widget */}
           <div
-            className="group relative overflow-hidden rounded-3xl bg-white border border-white/20 shadow-soft p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer dark:bg-white/5 dark:border-white/10"
+            className="group relative overflow-hidden rounded-[2rem] bg-white border border-white/20 shadow-soft p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer dark:bg-card dark:border-white/5"
             onClick={() => navigate('/aima')}
           >
             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-              <div className="w-16 h-16 rounded-full bg-emerald-500 blur-2xl" />
+              <div className="w-20 h-20 rounded-full bg-emerald-500 blur-3xl" />
             </div>
 
-            <div className="relative z-10 flex flex-col h-full justify-between gap-4">
+            <div className="relative z-10 flex flex-col h-full justify-between gap-6">
               <div className="flex items-start justify-between">
-                <div className="p-2.5 rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400">
-                  <Globe className="w-5 h-5" />
+                <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
+                  <Globe className="w-6 h-6" />
                 </div>
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider bg-muted/50 px-2 py-1 rounded-full">
-                  {aimaProcess?.process_type ? `${Math.min(Math.round(aimaProcess.step / 5 * 100), 100)}%` : 'Start'}
+                <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider bg-muted/50 px-2.5 py-1 rounded-full">
+                  {aimaProcess?.process_type ? `${Math.min(Math.round(aimaProcess.step / 5 * 100), 100)}%` : 'New'}
                 </span>
               </div>
 
               <div>
-                <span className="text-sm font-semibold text-foreground block mb-1 truncate">
+                <span className="text-base font-bold text-foreground block mb-2 truncate">
                   {aimaProcess?.process_type ? (
                     visaTypes.find(v => v.id === aimaProcess.process_type)?.name || "Processo"
                   ) : "Iniciar AIMA"}
                 </span>
-                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-1000 ease-out shadow-[0_0_10px_hsl(150_60%_45%/0.5)]"
                     style={{ width: `${aimaProcess?.process_type ? Math.min((aimaProcess.step / 5 * 100), 100) : 0}%` }}
@@ -317,28 +385,28 @@ export default function Home() {
 
         {/* Starred Notes Section */}
         {starredNotes.length > 0 && (
-          <div className="mb-8">
+          <div className="mb-10">
             <div className="flex items-center justify-between mb-4 px-1">
-              <h2 className="text-base font-bold text-foreground">Importante</h2>
-              <span className="text-xs font-medium text-primary cursor-pointer hover:underline" onClick={() => navigate('/notes')}>Ver tudo</span>
+              <h2 className="text-lg font-extrabold text-foreground">Importante</h2>
+              <span className="text-sm font-medium text-primary cursor-pointer hover:underline" onClick={() => navigate('/notes')}>Ver tudo</span>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto pb-4 -mx-5 px-5 scrollbar-hide">
+            <div className="flex gap-4 overflow-x-auto pb-6 -mx-5 px-5 scrollbar-hide">
               {starredNotes.map((note) => (
                 <div
                   key={note.id}
                   onClick={() => navigate('/notes')}
-                  className="min-w-[160px] max-w-[200px] bg-white border border-white/40 rounded-3xl p-4 shadow-sm space-y-3 cursor-pointer hover:-translate-y-1 transition-all active:scale-95 dark:bg-white/5 dark:border-white/10"
+                  className="min-w-[170px] max-w-[210px] bg-white border border-white/40 rounded-[1.5rem] p-5 shadow-sm space-y-3 cursor-pointer hover:-translate-y-1 transition-all active:scale-95 dark:bg-card dark:border-white/10"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="w-8 h-8 rounded-full bg-yellow-400/10 flex items-center justify-center">
-                      <StickyNote className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+                    <div className="w-9 h-9 rounded-full bg-yellow-400/10 flex items-center justify-center">
+                      <StickyNote className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
                     </div>
-                    <Star className="w-4 h-4 fill-[#FFD700] text-[#FFD700]" />
+                    <Star className="w-5 h-5 fill-[#FFD700] text-[#FFD700]" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm truncate text-foreground">{note.title}</h3>
-                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1 leading-relaxed">{note.content}</p>
+                    <h3 className="font-bold text-base truncate text-foreground mb-1">{note.title}</h3>
+                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed opacity-90">{note.content}</p>
                   </div>
                 </div>
               ))}
@@ -346,58 +414,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* Quick Access Numbers & Documents */}
-        <div className="mb-8">
-          <h2 className="text-base font-bold text-foreground mb-4 px-1">Seus Documentos</h2>
-          <div className="flex gap-3 overflow-x-auto pb-4 -mx-5 px-5 scrollbar-hide">
-            {/* Standard Blocks with better styling */}
-            <QuickAccessCard
-              label="NIF"
-              value={profile?.nif || ''}
-              placeholder="Adicionar"
-              onClick={() => openNumberDialog('nif')}
-              isSecure={true}
-              className="bg-white"
-            />
-            <QuickAccessCard
-              label="NISS"
-              value={profile?.niss || ''}
-              placeholder="Adicionar"
-              onClick={() => openNumberDialog('niss')}
-              isSecure={true}
-            />
-            <QuickAccessCard
-              label="SNS"
-              value={profile?.sns || ''}
-              placeholder="Adicionar"
-              onClick={() => openNumberDialog('sns')}
-              isSecure={true}
-            />
-            <QuickAccessCard
-              label="Passaporte"
-              value={profile?.passport || ''}
-              placeholder="Adicionar"
-              onClick={() => openNumberDialog('passport')}
-              isSecure={true}
-            />
 
-            {/* Custom Blocks Added by User */}
-            {profile?.custom_quick_access?.map((block) => (
-              <QuickAccessCard
-                key={block.id}
-                label={block.label}
-                value={block.value || ''}
-                placeholder="Adicionar"
-                onClick={() => {
-                  setTempNumber(block.value || '');
-                  setShowNumberDialog(block.label);
-                }}
-                isSecure={true}
-              />
-            ))}
-
-          </div>
-        </div>
 
         <CalendarPreview />
         <CommunityCard />
